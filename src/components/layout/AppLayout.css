@@ -1,0 +1,26 @@
+.app-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100vh;        /* lock to viewport so panels scroll independently */
+  overflow: hidden;      /* the page itself never scrolls */
+}
+
+.app-layout.collapsed {
+  grid-template-columns: 64px 1fr;
+}
+
+.app-layout__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;      /* topbar stays put; only content scrolls */
+}
+
+.app-layout__content {
+  padding: 24px;
+  flex: 1;
+  min-height: 0;         /* allow the flex child to shrink so it can scroll */
+  overflow-y: auto;      /* ONLY this area scrolls */
+  background: var(--color-bg);
+}

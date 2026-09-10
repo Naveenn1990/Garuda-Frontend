@@ -1,0 +1,122 @@
+/* Category cards grid */
+.cat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.cat-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.cat-card:hover {
+  box-shadow: 0 10px 24px rgba(22, 19, 14, 0.1);
+  transform: translateY(-2px);
+}
+
+.cat-card__media {
+  aspect-ratio: 16 / 10;
+  background: var(--brand-gold-soft, #f7f3e7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cat-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Logos (e.g. brands) should be fully visible, not cropped. */
+.cat-card__media--contain {
+  background: #fff;
+}
+.cat-card__media--contain img {
+  object-fit: contain;
+  padding: 14px;
+}
+.cat-card__noimg {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--brand-gold, #b58a2e);
+  text-transform: uppercase;
+}
+
+.cat-card__body {
+  padding: 14px 14px 6px;
+  flex: 1;
+}
+.cat-card__name {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+.cat-card__subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cat-card__sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--brand-gold-soft, #f7f3e7);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  color: var(--color-text);
+}
+.cat-card__sub-actions {
+  display: inline-flex;
+  gap: 2px;
+}
+.cat-card__sub-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: inline-flex;
+  padding: 2px;
+  font-size: 0.8rem;
+}
+.cat-card__sub-actions button:hover {
+  color: var(--brand-gold, #b58a2e);
+}
+.cat-card__empty {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.cat-card__actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--color-border);
+}
+.cat-card__btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+.cat-card__btn:hover {
+  background: var(--brand-gold-soft, #f7f3e7);
+}
+.cat-card__btn--danger {
+  color: #c0392b;
+}
+.cat-card__btn--danger:hover {
+  background: #fdecea;
+}

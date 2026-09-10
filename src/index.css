@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Garuda brand theme
+   Palette:
+     --brand-cream #E7DFC8  (light background / surfaces)
+     --brand-dark  #1C1B17  (near-black: sidebar, text)
+     --brand-gold  #C68629  (primary accent: buttons, active states)
+   All components reference these variables so the palette stays consistent.
+--------------------------------------------------------------------------- */
+:root {
+  /* Brand colors */
+  --brand-cream: #e7dfc8;
+  --brand-dark: #1c1b17;
+  --brand-gold: #c68629;
+
+  /* Derived shades */
+  --brand-gold-dark: #a86f1f;
+  --brand-gold-soft: rgba(198, 134, 41, 0.12);
+  --brand-dark-soft: #2a2823;
+  --brand-cream-soft: #f7f6f2;
+
+  /* Semantic tokens */
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-text: var(--brand-dark);
+  --color-text-muted: #6b675c;
+  --color-border: #e5e2d8;
+  --color-primary: var(--brand-gold);
+  --color-primary-hover: var(--brand-gold-dark);
+
+  --color-danger: #b3402f;
+  --color-success: #4a7c3f;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Order channel badge (admin Orders list) */
+.order-channel {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.order-channel--website { background: #e3f0ff; color: #1d4ed8; }
+.order-channel--mobile { background: #f0e8ff; color: #7c3aed; }
+.order-channel--showroom { background: #f0ead8; color: #8a6d1f; }

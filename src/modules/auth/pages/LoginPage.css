@@ -1,0 +1,294 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap");
+
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #faf5e7;
+  font-family: "Inter", sans-serif;
+}
+
+/* ---- Form column: now centered on the full page ---- */
+.login__left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6vw 7vw;
+  width: 100%;
+}
+
+.login__form {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Brand mark: small, left-aligned, paired with a thin gold rule rather than
+   a centered hero logo — the crest does its work later, on the right. */
+.login__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.login__logo {
+  height: 96px;
+  width: auto;
+  object-fit: contain;
+}
+
+.login__title {
+  margin: 0;
+  text-align: center;
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 2.5rem;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: #16130e;
+}
+
+.login__subtitle {
+  margin: 14px auto 40px;
+  text-align: center;
+  color: #756c5a;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 360px;
+}
+
+.login__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #16130e;
+  margin-bottom: 8px;
+}
+
+/* Underlined field, not a rounded pill — quieter, more editorial, and reads
+   as ledger/registry rather than generic SaaS card. */
+.login__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #ddd3b8;
+  padding: 4px 2px;
+  margin-bottom: 26px;
+  transition: border-color 0.15s;
+}
+
+.login__field:focus-within {
+  border-color: #a9791f;
+}
+
+.login__field-icon {
+  color: #a9791f;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.login__field input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 11px 0;
+  font-size: 1rem;
+  color: #16130e;
+  font-family: inherit;
+}
+
+.login__field input::placeholder {
+  color: #a39a86;
+}
+
+.login__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #756c5a;
+  padding: 4px;
+  font-size: 1.05rem;
+}
+
+.login__toggle:hover {
+  color: #16130e;
+}
+
+/* Remember me row */
+.login__row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.login__remember {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.92rem;
+  color: #756c5a;
+  cursor: pointer;
+}
+
+.login__remember input {
+  width: 16px;
+  height: 16px;
+  accent-color: #a9791f;
+  cursor: pointer;
+}
+
+.login__error {
+  background: #fbeeea;
+  color: #93341f;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  margin-bottom: 20px;
+  border-left: 2px solid #93341f;
+}
+
+/* Sign in button: ink field, gold hairline on hover — no border-radius
+   inflation, no drop shadow. */
+.login__submit {
+  width: 100%;
+  border: 1px solid #16130e;
+  border-radius: 3px;
+  background: #16130e;
+  color: #faf5e7;
+  font-family: "Inter", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 15px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.login__submit:hover {
+  background: #2b2619;
+  border-color: #a9791f;
+}
+
+.login__submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---- Right: ink panel ---- */
+.login__right {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6vw;
+  background: #16130e;
+  overflow: hidden;
+}
+
+/* One deliberate glow, not a pair of colored blobs. */
+.login__right::before {
+  content: "";
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  background: radial-gradient(circle, rgba(169, 121, 31, 0.16), transparent 68%);
+  pointer-events: none;
+}
+
+.login__right-content {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+}
+
+.login__eyebrow-rule {
+  width: 44px;
+  height: 2px;
+  background: #a9791f;
+  margin-bottom: 24px;
+}
+
+.login__right-heading {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 2.1rem;
+  line-height: 1.18;
+  color: #faf5e7;
+  margin: 0 0 16px;
+}
+
+.login__right-copy {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: #beb29a;
+  margin: 0 0 44px;
+  max-width: 380px;
+}
+
+/* Framed illustration: hairline gold border with open corner ticks, in
+   place of a shadowed floating image. */
+.login__frame {
+  position: relative;
+  padding: 28px;
+  border: 1px solid rgba(169, 121, 31, 0.4);
+}
+
+.login__frame::before,
+.login__frame::after,
+.login__frame > .login__illustration {
+  position: relative;
+}
+
+.login__corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #a9791f;
+}
+
+.login__corner--tl {
+  top: -1.5px;
+  left: -1.5px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.login__corner--br {
+  bottom: -1.5px;
+  right: -1.5px;
+  border-left: none;
+  border-top: none;
+}
+
+.login__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Stack on small screens: hide the ink panel, keep the form full-width */
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+  .login__right {
+    display: none;
+  }
+  .login__left {
+    padding: 12vw 8vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login__submit,
+  .login__field {
+    transition: none;
+  }
+}

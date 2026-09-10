@@ -1,0 +1,43 @@
+.perm-matrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.perm-group {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.perm-group__head {
+  background: var(--brand-cream-soft);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.perm-group__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.perm-group__actions {
+  padding: 10px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.perm-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  cursor: pointer;
+  color: var(--color-text);
+}
