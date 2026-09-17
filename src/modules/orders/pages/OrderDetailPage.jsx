@@ -8,6 +8,8 @@ import { usePermissions } from "../../../app/store/permissionStore";
 import { useOrder, useOrderStatus, useOrderReturns, useCreateReturn, useReturnAction } from "../hooks/useOrders";
 import { useRecordPayment } from "../../payments/hooks/usePayments";
 import { useCreateDelivery } from "../../deliveries/hooks/useDeliveries";
+import { useCompany } from "../../../app/store/companyStore";
+import TaxInvoice from "../components/TaxInvoice";
 import { useQueryClient } from "@tanstack/react-query";
 
 const inr = (n) => `₹${(Number(n) || 0).toLocaleString("en-IN")}`;
@@ -50,6 +52,7 @@ export function OrderDetailPage() {
   const orderStatus = useOrderStatus();
   const recordPayment = useRecordPayment();
   const createDelivery = useCreateDelivery();
+  const { company } = useCompany();
   const { data: returns = [] } = useOrderReturns(id);
   const createReturn = useCreateReturn();
   const returnAction = useReturnAction();
@@ -58,6 +61,8 @@ export function OrderDetailPage() {
   const [payOpen, setPayOpen] = useState(false);
   const [delOpen, setDelOpen] = useState(false);
   const [retOpen, setRetOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [challanOpen, setChallanOpen] = useState(false);
   const [payForm, setPayForm] = useState({ amount: "", mode: "cash", reference: "" });
   const [delForm, setDelForm] = useState({ scheduledDate: "", address: "" });
   const [retForm, setRetForm] = useState({ reason: "", refundAmount: "" });
@@ -93,8 +98,17 @@ export function OrderDetailPage() {
 
   async function submitPayment(e) {
     e.preventDefault();
+    const amt = Number(payForm.amount);
+    if (!amt || amt <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+    if (amt > balance) {
+      alert(`Amount cannot exceed the balance due of ${inr(balance)}.`);
+      return;
+    }
     try {
-      await recordPayment.mutateAsync({ order: id, amount: Number(payForm.amount), mode: payForm.mode, reference: payForm.reference });
+      await recordPayment.mutateAsync({ order: id, amount: amt, mode: payForm.mode, reference: payForm.reference });
       setPayForm({ amount: "", mode: "cash", reference: "" });
       setPayOpen(false);
       refresh();
@@ -152,6 +166,8 @@ export function OrderDetailPage() {
         actions={
           <div style={{ display: "flex", gap: 8 }}>
             <Button variant="secondary" onClick={() => navigate("/orders")}>Back</Button>
+            <Button variant="secondary" onClick={() => setInvoiceOpen(true)}>📄 Print Invoice</Button>
+            <Button variant="secondary" onClick={() => setChallanOpen(true)}>🚚 Print Challan</Button>
             {hasPermission("orders.edit") &&
               (NEXT_ACTIONS[o.status] || []).map((a) => (
                 <Button key={a.action} variant={a.variant} onClick={() => doStatus(a.action)} disabled={orderStatus.isPending}>
@@ -287,7 +303,14 @@ export function OrderDetailPage() {
         <form onSubmit={submitPayment}>
           <p style={{ color: "var(--color-text-muted)", fontSize: "0.85rem" }}>Balance due: {inr(balance)}</p>
           <FormField label="Amount *" htmlFor="pd-amount">
-            <input id="pd-amount" type="number" min="1" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} required />
+            <input id="pd-amount" type="number" min="1" max={balance} step="0.01" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: e.target.value })} required />
+            <button
+              type="button"
+              style={{ background: "none", border: "none", color: "var(--color-primary, #c68629)", fontSize: "0.8rem", cursor: "pointer", padding: "4px 0" }}
+              onClick={() => setPayForm({ ...payForm, amount: String(balance) })}
+            >
+              Pay full balance ({inr(balance)})
+            </button>
           </FormField>
           <FormField label="Mode" htmlFor="pd-mode">
             <select id="pd-mode" value={payForm.mode} onChange={(e) => setPayForm({ ...payForm, mode: e.target.value })}>
@@ -336,8 +359,86 @@ export function OrderDetailPage() {
           </FormField>
         </form>
       </Modal>
+
+      {/* GST Tax Invoice Modal — dynamic, pulls company settings */}
+      <Modal
+        open={invoiceOpen}
+        title="Tax Invoice"
+        onClose={() => setInvoiceOpen(false)}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setInvoiceOpen(false)}>Close</Button>
+            <Button onClick={() => window.print()}>🖨️ Print Invoice</Button>
+          </>
+        }
+      >
+        <TaxInvoice o={o} company={company} balance={balance} />
+      </Modal>
+
+      {/* Delivery Challan Modal */}
+      <Modal
+        open={challanOpen}
+        title="Delivery Challan"
+        onClose={() => setChallanOpen(false)}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setChallanOpen(false)}>Close</Button>
+            <Button onClick={() => window.print()}>🖨️ Print Challan</Button>
+          </>
+        }
+      >
+        <div className="printable-document" style={{ padding: "16px", backgroundColor: "#fff", color: "#1e293b", fontSize: "0.85rem", lineHeight: "1.4" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "2px solid #334155", paddingBottom: 10, marginBottom: 12 }}>
+            <div>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 800, margin: 0 }}>GARUDA LOGISTICS & DISPATCH</h2>
+              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Dispatch from: {o.showroom?.name} ({o.showroom?.code})</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontWeight: 800, fontSize: "1.1rem" }}>DELIVERY CHALLAN</div>
+              <div>Ref Order #: {o.number}</div>
+              <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Date: {new Date().toLocaleDateString("en-IN")}</div>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: "#f8fafc", padding: 10, borderRadius: 6, marginBottom: 14 }}>
+            <div><strong>Recipient:</strong> {o.customer?.name} ({o.customer?.mobile})</div>
+            <div><strong>Destination:</strong> {o.deliveryAddress?.address || o.customer?.address || "Showroom Handover"}</div>
+          </div>
+
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20 }}>
+            <thead>
+              <tr style={{ backgroundColor: "#e2e8f0", fontSize: "0.8rem" }}>
+                <th style={{ padding: "6px 8px", border: "1px solid #cbd5e1" }}>#</th>
+                <th style={{ padding: "6px 8px", border: "1px solid #cbd5e1" }}>Item Description</th>
+                <th style={{ padding: "6px 8px", border: "1px solid #cbd5e1", textAlign: "center" }}>Dispatched Qty</th>
+                <th style={{ padding: "6px 8px", border: "1px solid #cbd5e1", textAlign: "center" }}>Received Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(o.items || []).map((it, idx) => (
+                <tr key={idx}>
+                  <td style={{ padding: "6px 8px", border: "1px solid #cbd5e1" }}>{idx + 1}</td>
+                  <td style={{ padding: "6px 8px", border: "1px solid #cbd5e1" }}>{it.name || it.product?.name}</td>
+                  <td style={{ padding: "6px 8px", border: "1px solid #cbd5e1", textAlign: "center", fontWeight: 700 }}>{it.quantity}</td>
+                  <td style={{ padding: "6px 8px", border: "1px solid #cbd5e1", textAlign: "center" }}>[ &nbsp;&nbsp;&nbsp; ]</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 30, marginTop: 40 }}>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ borderBottom: "1px solid #94a3b8", height: 24, marginBottom: 4 }}></div>
+              <div style={{ fontSize: "0.75rem", color: "#64748b" }}>Dispatch Driver / Courier Signature</div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ borderBottom: "1px solid #94a3b8", height: 24, marginBottom: 4 }}></div>
+              <div style={{ fontSize: "0.75rem", color: "#64748b" }}>Customer Signature & Date (Goods Received in Good Condition)</div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
-
 export default OrderDetailPage;

@@ -92,21 +92,38 @@ export function UserCreatePage() {
             </FormField>
           </div>
 
-          <div className="form-section__title">Showroom Access</div>
+          <div className="form-section__title">Location Access</div>
+          <p style={{ fontSize: "0.82rem", color: "var(--color-text-muted)", margin: "0 0 10px" }}>
+            Tick the warehouses / showrooms this user can access. Leave all unticked for
+            org-wide access (sees everything).
+          </p>
           {showrooms.length === 0 ? (
-            <p className="tab-empty">No showrooms yet. Create a showroom first, or leave empty for org-wide access.</p>
+            <p className="tab-empty">No locations yet. Create a showroom or warehouse first.</p>
           ) : (
-            <div className="perm-group__actions" style={{ padding: 0 }}>
-              {showrooms.map((s) => (
-                <label key={s._id} className="perm-action">
-                  <input
-                    type="checkbox"
-                    checked={showroomAccess.has(s._id)}
-                    onChange={() => toggleShowroom(s._id)}
-                  />
-                  {s.name} ({s.code})
-                </label>
-              ))}
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {["warehouse", "showroom"].map((type) => {
+                const list = showrooms.filter((s) => (s.type || "showroom") === type);
+                if (list.length === 0) return null;
+                return (
+                  <div key={type}>
+                    <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+                      {type === "warehouse" ? "🏭 Warehouses" : "🏪 Showrooms"}
+                    </div>
+                    <div className="perm-group__actions" style={{ padding: 0 }}>
+                      {list.map((s) => (
+                        <label key={s._id} className="perm-action">
+                          <input
+                            type="checkbox"
+                            checked={showroomAccess.has(s._id)}
+                            onChange={() => toggleShowroom(s._id)}
+                          />
+                          {s.name} ({s.code})
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 

@@ -2,9 +2,10 @@
 // Wraps all storefront routes and provides the cart/wishlist store.
 import { useState, useEffect } from "react";
 import { NavLink, Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import { FiHome, FiShoppingBag, FiMapPin, FiMail, FiShoppingCart, FiHeart, FiSearch, FiUser, FiLogOut, FiInfo, FiPhone, FiMenu, FiX, FiArrowLeft, FiFacebook, FiInstagram, FiTwitter, FiYoutube } from "react-icons/fi";
+import { FiHome, FiShoppingBag, FiMapPin, FiMail, FiShoppingCart, FiHeart, FiUser, FiLogOut, FiInfo, FiPhone, FiMenu, FiX, FiArrowLeft, FiFacebook, FiInstagram, FiTwitter, FiYoutube } from "react-icons/fi";
 import { StoreProvider, useStore } from "../store/StoreProvider";
 import { CustomerAuthProvider, useCustomerAuth } from "../store/CustomerAuthProvider";
+import SearchSuggestions from "./SearchSuggestions";
 import logo from "../../../assets/logo.png";
 import "./storefront.css";
 
@@ -21,14 +22,8 @@ function Header() {
   const navigate = useNavigate();
   const { cartCount, wishlistCount } = useStore();
   const { isLoggedIn, customer, logout } = useCustomerAuth();
-  const [q, setQ] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  function onSearch(e) {
-    e.preventDefault();
-    setMenuOpen(false);
-    navigate(`/shop?q=${encodeURIComponent(q.trim())}`);
-  }
   const closeMenu = () => setMenuOpen(false);
 
   return (
@@ -38,14 +33,7 @@ function Header() {
           <img src={logo} alt="Garuda International" />
         </Link>
 
-        <form className="sf-nav__search" onSubmit={onSearch}>
-          <FiSearch className="sf-nav__search-icon" aria-hidden="true" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search products..."
-          />
-        </form>
+        <SearchSuggestions />
 
         {/* Desktop links */}
         <div className="sf-nav__links">
@@ -208,9 +196,10 @@ function Footer() {
 function BackButton() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  // No back button on home, cart, checkout, product detail, auth, or account pages.
+  // No back button on home, shop, cart, checkout, product detail, auth, or account pages.
   if (
     pathname === "/" ||
+    pathname === "/shop" ||
     pathname === "/cart" ||
     pathname === "/checkout" ||
     pathname === "/account" ||

@@ -8,8 +8,19 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach the auth token (if present) to every outgoing request.
+// Storefront (customer) routes live under /shop/*. Those calls carry the CUSTOMER
+// token explicitly (set per-request in CustomerAuthProvider), so the shared staff
+// interceptor must NOT touch them — otherwise the two logins clobber each other.
+function isShopRoute(url = "") {
+  return url.startsWith("/shop") || url.startsWith("shop/") || url.includes("/shop/");
+}
+
+// Attach the STAFF auth token to CRM/admin requests only. If a request already set
+// its own Authorization header (e.g. a customer call), leave it untouched.
 api.interceptors.request.use((request) => {
+  if (isShopRoute(request.url) || request.headers.Authorization) {
+    return request;
+  }
   const token = localStorage.getItem(config.tokenStorageKey);
   if (token) {
     request.headers.Authorization = `Bearer ${token}`;
@@ -17,12 +28,13 @@ api.interceptors.request.use((request) => {
   return request;
 });
 
-// Basic response error handling. On 401 we clear the token so the app can redirect
-// the user back to login.
+// On 401, only clear the STAFF token for CRM/admin routes. A 401 from a /shop/*
+// (customer) call must never log the admin out, and vice versa.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url || "";
+    if (error.response?.status === 401 && !isShopRoute(url)) {
       localStorage.removeItem(config.tokenStorageKey);
     }
     return Promise.reject(error);

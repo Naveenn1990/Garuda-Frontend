@@ -35,10 +35,12 @@ import WarehouseCreatePage from "../../modules/warehouses/pages/WarehouseCreateP
 // Roles (Sprint 1)
 import RolesPage from "../../modules/roles/pages/RolesPage";
 import RoleCreatePage from "../../modules/roles/pages/RoleCreatePage";
+import RoleEditPage from "../../modules/roles/pages/RoleEditPage";
 
 // Users (Sprint 1)
 import UsersPage from "../../modules/users/pages/UsersPage";
 import UserCreatePage from "../../modules/users/pages/UserCreatePage";
+import UserEditPage from "../../modules/users/pages/UserEditPage";
 
 // CRM (Sprint 4)
 import CustomersPage from "../../modules/customers/pages/CustomersPage";
@@ -53,16 +55,33 @@ import CategoriesPage from "../../modules/categories/pages/CategoriesPage";
 import BrandsPage from "../../modules/brands/pages/BrandsPage";
 import BannersPage from "../../modules/banners/pages/BannersPage";
 import TestimonialsPage from "../../modules/testimonials/pages/TestimonialsPage";
+import CouponsPage from "../../modules/coupons/pages/CouponsPage";
+import AboutAdminPage from "../../modules/about/pages/AboutAdminPage";
 import InventoryPage from "../../modules/inventory/pages/InventoryPage";
 import StockLedgerPage from "../../modules/inventory/pages/StockLedgerPage";
 import TransfersPage from "../../modules/transfers/pages/TransfersPage";
+import TransferDetailPage from "../../modules/transfers/pages/TransferDetailPage";
 import OrdersPage from "../../modules/orders/pages/OrdersPage";
+import OrderCreatePage from "../../modules/orders/pages/OrderCreatePage";
 import OrderDetailPage from "../../modules/orders/pages/OrderDetailPage";
+import InvoiceViewPage from "../../modules/orders/pages/InvoiceViewPage";
 import PaymentsPage from "../../modules/payments/pages/PaymentsPage";
+import PaymentInPage from "../../modules/payments/pages/PaymentInPage";
 import DeliveriesPage from "../../modules/deliveries/pages/DeliveriesPage";
+// Sales sub-modules (scaffold)
+import SalesReturnPage from "../../modules/sales/pages/SalesReturnPage";
+import CreditNotePage from "../../modules/sales/pages/CreditNotePage";
+// Purchase module (scaffold)
+import PurchaseInvoicePage from "../../modules/purchases/pages/PurchaseInvoicePage";
+import PurchaseInvoiceCreatePage from "../../modules/purchases/pages/PurchaseInvoiceCreatePage";
+import PurchaseInvoiceViewPage from "../../modules/purchases/pages/PurchaseInvoiceViewPage";
+import PaymentOutPage from "../../modules/purchases/pages/PaymentOutPage";
+import PurchaseReturnPage from "../../modules/purchases/pages/PurchaseReturnPage";
+import DebitNotePage from "../../modules/purchases/pages/DebitNotePage";
 import ReportsPage from "../../modules/reports/pages/ReportsPage";
 import NotificationsPage from "../../modules/notifications/pages/NotificationsPage";
 import AuditLogsPage from "../../modules/audit-logs/pages/AuditLogsPage";
+import BusinessSettingsPage from "../../modules/settings/pages/BusinessSettingsPage";
 
 export function AppRoutes() {
   return (
@@ -107,8 +126,10 @@ export function AppRoutes() {
         {/* Administration - Users & Roles */}
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/create" element={<UserCreatePage />} />
+        <Route path="/users/:id/edit" element={<UserEditPage />} />
         <Route path="/roles" element={<RolesPage />} />
         <Route path="/roles/create" element={<RoleCreatePage />} />
+        <Route path="/roles/:id/edit" element={<RoleEditPage />} />
 
         {/* CRM */}
         <Route path="/customers" element={<CustomersPage />} />
@@ -126,22 +147,45 @@ export function AppRoutes() {
         <Route path="/brands" element={<BrandsPage />} />
         <Route path="/banners" element={<BannersPage />} />
         <Route path="/testimonials" element={<TestimonialsPage />} />
+        <Route path="/coupons" element={<CouponsPage />} />
+        <Route path="/about-page" element={<AboutAdminPage />} />
 
         {/* Inventory */}
         <Route path="/inventory" element={<InventoryPage />} />
         <Route path="/inventory/ledger" element={<StockLedgerPage />} />
         <Route path="/transfers" element={<TransfersPage />} />
+        <Route path="/transfers/:id" element={<TransferDetailPage />} />
 
-        {/* Sales (stubs) */}
+        {/* Sales */}
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/create" element={<OrderCreatePage />} />
+        <Route path="/orders/:id/invoice" element={<InvoiceViewPage />} />
         <Route path="/orders/:id" element={<OrderDetailPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
+        <Route path="/payments/create" element={<PaymentInPage />} />
+
+        {/* Sales sub-modules */}
+        <Route path="/sales-returns" element={<SalesReturnPage />} />
+        <Route path="/credit-notes" element={<CreditNotePage />} />
+
+        {/* Purchase module */}
+        <Route path="/purchases" element={<PurchaseInvoicePage />} />
+        <Route path="/purchases/create" element={<PurchaseInvoiceCreatePage />} />
+        <Route path="/purchases/:id" element={<PurchaseInvoiceViewPage />} />
+        <Route path="/payments-out" element={<PaymentOutPage />} />
+        <Route path="/purchase-returns" element={<PurchaseReturnPage />} />
+        <Route path="/debit-notes" element={<DebitNotePage />} />
         <Route path="/deliveries" element={<DeliveriesPage />} />
 
         {/* Insights (stubs) */}
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/audit-logs" element={<AuditLogsPage />} />
+
+        {/* Business Settings */}
+        <Route path="/settings" element={<BusinessSettingsPage />} />
+        <Route path="/settings/company" element={<BusinessSettingsPage />} />
+        <Route path="/settings/business" element={<BusinessSettingsPage />} />
       </Route>
 
       {/* Unknown paths fall back to the storefront home. */}

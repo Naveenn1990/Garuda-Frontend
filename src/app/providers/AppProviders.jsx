@@ -1,9 +1,9 @@
-// Composes all global providers in one place: React Query (server state), auth and UI.
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "../store/authStore";
 import { PermissionProvider } from "../store/permissionStore";
 import { UIProvider } from "../store/uiStore";
+import { CompanyProvider } from "../store/companyStore";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +17,9 @@ export function AppProviders({ children }) {
       <BrowserRouter>
         <AuthProvider>
           <PermissionProvider>
-            <UIProvider>{children}</UIProvider>
+            <UIProvider>
+              <CompanyProvider>{children}</CompanyProvider>
+            </UIProvider>
           </PermissionProvider>
         </AuthProvider>
       </BrowserRouter>

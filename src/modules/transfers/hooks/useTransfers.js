@@ -12,6 +12,17 @@ export function useTransfers(params = {}) {
   });
 }
 
+export function useTransfer(id) {
+  return useQuery({
+    enabled: Boolean(id),
+    queryKey: ["transfers", id],
+    queryFn: async () => {
+      const { data } = await api.get(`/transfers/${id}`);
+      return data.item;
+    },
+  });
+}
+
 export function useCreateTransfer() {
   const qc = useQueryClient();
   return useMutation({
@@ -24,9 +35,11 @@ export function useTransferAction() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, action }) => api.patch(`/transfers/${id}/status`, { action }),
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: ["transfers"] });
+      qc.invalidateQueries({ queryKey: ["transfers", id] });
       qc.invalidateQueries({ queryKey: ["inventory"] });
+      qc.invalidateQueries({ queryKey: ["stock-ledger"] });
     },
   });
 }

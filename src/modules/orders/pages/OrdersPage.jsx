@@ -1,218 +1,219 @@
-// Orders page. List with lifecycle status + next-step actions, and a create modal
-// (customer + showroom + one product line to keep it focused).
-import { useState } from "react";
+// Sales Invoices page — server-side paginated, filtered, and aggregated so it stays
+// fast with thousands of orders. Stat cards + date range + debounced search + status
+// filter + pagination all hit the backend.
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { PageHeader, Card, Button, Spinner, Modal, FormField, ExportButton } from "../../../components";
+import { FiFileText, FiCheckCircle, FiAlertCircle, FiXCircle, FiSearch, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { PageHeader, Card, Button, Spinner } from "../../../components";
 import { usePermissions } from "../../../app/store/permissionStore";
-import { useCustomers } from "../../customers/hooks/useCustomers";
-import { useProducts } from "../../products/hooks/useProducts";
-import { useShowrooms } from "../../showrooms/hooks/useShowrooms";
-import { useOrders, useCreateOrder, useOrderStatus } from "../hooks/useOrders";
+import { useOrders, useOrderStats } from "../hooks/useOrders";
+import "./OrdersPage.css";
 
-const EXPORT_COLUMNS = [
-  { header: "Order #", value: (r) => r.number },
-  { header: "Channel", value: (r) => r.channel || "showroom" },
-  { header: "Customer", value: (r) => r.customer?.name || "" },
-  { header: "Showroom", value: (r) => r.showroom?.code || "" },
-  { header: "Total", value: (r) => r.grandTotal },
-  { header: "Payment", value: (r) => r.paymentStatus },
-  { header: "Status", value: (r) => r.status },
+const inr = (n) => `₹${(Number(n) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+// Date range presets → ISO `from` value.
+const RANGES = [
+  { label: "Last 30 Days", days: 30 },
+  { label: "Last 90 Days", days: 90 },
+  { label: "Last 365 Days", days: 365 },
+  { label: "All Time", days: null },
 ];
 
-const CHANNEL_LABEL = { website: "Website", mobile: "Mobile App", showroom: "Showroom" };
+const STATUSES = [
+  { label: "All Statuses", value: "" },
+  { label: "New", value: "new" },
+  { label: "Confirmed", value: "confirmed" },
+  { label: "Processing", value: "processing" },
+  { label: "Dispatched", value: "dispatched" },
+  { label: "Delivered", value: "delivered" },
+  { label: "Cancelled", value: "cancelled" },
+];
 
-const NEXT_ACTIONS = {
-  new: [
-    { action: "confirm", label: "Confirm", variant: "primary" },
-    { action: "cancel", label: "Cancel", variant: "secondary" },
-  ],
-  confirmed: [
-    { action: "process", label: "Process", variant: "primary" },
-    { action: "cancel", label: "Cancel", variant: "secondary" },
-  ],
-  processing: [{ action: "dispatch", label: "Dispatch", variant: "primary" }],
-  dispatched: [{ action: "deliver", label: "Deliver", variant: "primary" }],
-  delivered: [],
-  cancelled: [],
-};
+function payInfo(o) {
+  if (o.status === "cancelled") return { label: "Cancelled", tone: "cancelled" };
+  const bal = Math.max((o.grandTotal || 0) - (o.amountPaid || 0), 0);
+  if (bal <= 0) return { label: "Paid", tone: "paid" };
+  if ((o.amountPaid || 0) > 0) return { label: "Partial", tone: "partial" };
+  return { label: "Unpaid", tone: "unpaid" };
+}
 
-const inr = (n) => (typeof n === "number" ? `₹${n.toLocaleString("en-IN")}` : "—");
+function fromDate(days) {
+  if (!days) return undefined;
+  // Round to start-of-day so the value is stable within a day (not per-millisecond).
+  const d = new Date(Date.now() - days * 86400000);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
 
 export function OrdersPage() {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
-  const [channelFilter, setChannelFilter] = useState("");
-  const { data: orders = [], isLoading, isError } = useOrders(channelFilter ? { channel: channelFilter } : {});
-  const { data: customers = [] } = useCustomers();
-  const { data: products = [] } = useProducts();
-  const { data: showrooms = [] } = useShowrooms({ type: "showroom" });
 
-  const createOrder = useCreateOrder();
-  const orderStatus = useOrderStatus();
+  const [rangeDays, setRangeDays] = useState(365);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [q, setQ] = useState("");        // debounced search term sent to backend
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ customer: "", showroom: "", product: "", quantity: 1 });
-  const [error, setError] = useState("");
+  // Debounce the search box.
+  useEffect(() => {
+    const t = setTimeout(() => { setQ(searchInput.trim()); setPage(1); }, 350);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
-  async function handleCreate(e) {
-    e.preventDefault();
-    setError("");
-    const p = products.find((x) => x._id === form.product);
-    try {
-      await createOrder.mutateAsync({
-        customer: form.customer,
-        showroom: form.showroom,
-        items: [
-          {
-            product: form.product,
-            name: p?.name,
-            quantity: Number(form.quantity) || 1,
-            price: p?.sellingPrice || 0,
-            discount: p?.discount || 0,
-            gst: p?.gst || 0,
-          },
-        ],
-      });
-      setForm({ customer: "", showroom: "", product: "", quantity: 1 });
-      setOpen(false);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to create order.");
-    }
-  }
+  // Reset to page 1 when filters change.
+  useEffect(() => { setPage(1); }, [rangeDays, statusFilter]);
 
-  async function doAction(id, action) {
-    try {
-      await orderStatus.mutateAsync({ id, action });
-    } catch (err) {
-      alert(err.response?.data?.message || "Action failed.");
-    }
-  }
+  // Shared filter params for both list + stats. MEMOIZED so the `from` timestamp
+  // is stable across renders — otherwise the query key changes every render and
+  // React Query refetches forever ("Loading..." never ends).
+  const filterParams = useMemo(() => ({
+    from: fromDate(rangeDays),
+    status: statusFilter || undefined,
+    q: q || undefined,
+  }), [rangeDays, statusFilter, q]);
+
+  const listParams = useMemo(() => ({ ...filterParams, page, limit }), [filterParams, page]);
+
+  const { data: listData, isLoading, isError } = useOrders(listParams);
+  const { data: stats } = useOrderStats(filterParams);
+
+  const orders = listData?.items || [];
+  const total = listData?.total || 0;
+  const pages = listData?.pages || 1;
+
+  const s = stats || { totalSales: 0, paid: 0, unpaid: 0, cancelled: 0 };
 
   return (
     <div>
       <PageHeader
-        title="Orders"
-        subtitle="Sales orders and fulfilment"
+        title="Sales Invoices"
+        subtitle="All sales orders and their payment status"
         actions={
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select
-              value={channelFilter}
-              onChange={(e) => setChannelFilter(e.target.value)}
-              style={{ padding: "8px 10px", border: "1px solid var(--color-border)", borderRadius: 8 }}
-            >
-              <option value="">All channels</option>
-              <option value="website">Website</option>
-              <option value="showroom">Showroom</option>
-              <option value="mobile">Mobile App</option>
-            </select>
-            <ExportButton rows={orders} columns={EXPORT_COLUMNS} filename="orders.csv" />
-            {hasPermission("orders.create") && <Button onClick={() => setOpen(true)}>+ New Order</Button>}
-          </div>
+          hasPermission("orders.create") && (
+            <Button onClick={() => navigate("/orders/create")}>+ Create Sales Invoice</Button>
+          )
         }
       />
+
+      {/* Stat cards (server-aggregated) */}
+      <div className="sales-stats">
+        <div className="sales-stat sales-stat--total">
+          <div className="sales-stat__head"><FiFileText /> Total Sales</div>
+          <div className="sales-stat__value">{inr(s.totalSales)}</div>
+        </div>
+        <div className="sales-stat sales-stat--paid">
+          <div className="sales-stat__head"><FiCheckCircle /> Paid</div>
+          <div className="sales-stat__value">{inr(s.paid)}</div>
+        </div>
+        <div className="sales-stat sales-stat--unpaid">
+          <div className="sales-stat__head"><FiAlertCircle /> Unpaid</div>
+          <div className="sales-stat__value">{inr(s.unpaid)}</div>
+        </div>
+        <div className="sales-stat sales-stat--cancelled">
+          <div className="sales-stat__head"><FiXCircle /> Cancelled</div>
+          <div className="sales-stat__value">{s.cancelled > 0 ? inr(s.cancelled) : "—"}</div>
+        </div>
+      </div>
+
+      {/* Filter bar */}
+      <div className="sales-filterbar">
+        <div className="sales-search">
+          <FiSearch />
+          <input
+            placeholder="Search by invoice # or party name..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+        </div>
+        <select
+          className="sales-range"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          {STATUSES.map((st) => <option key={st.value} value={st.value}>{st.label}</option>)}
+        </select>
+        <select
+          className="sales-range"
+          value={rangeDays ?? "all"}
+          onChange={(e) => setRangeDays(e.target.value === "all" ? null : Number(e.target.value))}
+        >
+          {RANGES.map((r) => <option key={r.label} value={r.days ?? "all"}>{r.label}</option>)}
+        </select>
+      </div>
 
       {isLoading ? (
         <Spinner />
       ) : isError ? (
-        <p style={{ color: "var(--color-danger)" }}>Failed to load orders. Is the API running?</p>
+        <p style={{ color: "var(--color-danger)" }}>Failed to load invoices. Is the API running?</p>
       ) : (
         <Card>
           <div className="data-table__wrap" style={{ border: "none" }}>
-            <table className="data-table">
+            <table className="data-table sales-table">
               <thead>
                 <tr>
-                  <th>Order #</th>
-                  <th>Channel</th>
-                  <th>Customer</th>
-                  <th>Showroom</th>
-                  <th>Total</th>
-                  <th>Payment</th>
+                  <th>Date</th>
+                  <th>Invoice Number</th>
+                  <th>Party Name</th>
+                  <th>Amount</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {orders.length === 0 ? (
-                  <tr><td className="data-table__empty" colSpan={8}>No orders yet.</td></tr>
+                  <tr><td className="data-table__empty" colSpan={6}>No invoices found.</td></tr>
                 ) : (
-                  orders.map((o) => (
-                    <tr key={o._id}>
-                      <td>
-                        <a
-                          onClick={() => navigate(`/orders/${o._id}`)}
-                          style={{ color: "var(--brand-gold-dark)", cursor: "pointer", fontWeight: 600 }}
-                        >
-                          {o.number}
-                        </a>
-                      </td>
-                      <td>
-                        <span className={`order-channel order-channel--${o.channel || "showroom"}`}>
-                          {CHANNEL_LABEL[o.channel] || "Showroom"}
-                        </span>
-                      </td>
-                      <td>{o.customer?.name || "—"}</td>
-                      <td>{o.showroom?.code || "—"}</td>
-                      <td>{inr(o.grandTotal)}</td>
-                      <td><span className={`badge badge--${o.paymentStatus === "paid" ? "active" : "inactive"}`}>{o.paymentStatus}</span></td>
-                      <td><span className={`transfer-status transfer-status--${o.status === "delivered" ? "received" : o.status === "cancelled" ? "cancelled" : o.status === "new" ? "requested" : "approved"}`}>{o.status}</span></td>
-                      <td>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          {hasPermission("orders.edit") &&
-                            (NEXT_ACTIONS[o.status] || []).map((a) => (
-                              <Button key={a.action} variant={a.variant} onClick={() => doAction(o._id, a.action)} disabled={orderStatus.isPending}>
-                                {a.label}
-                              </Button>
-                            ))}
-                          {(NEXT_ACTIONS[o.status] || []).length === 0 && "—"}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                  orders.map((o) => {
+                    const pi = payInfo(o);
+                    const bal = Math.max((o.grandTotal || 0) - (o.amountPaid || 0), 0);
+                    return (
+                      <tr key={o._id} className="sales-row" onClick={() => navigate(`/orders/${o._id}/invoice`)}>
+                        <td style={{ whiteSpace: "nowrap", color: "var(--color-text-muted)" }}>
+                          {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                        </td>
+                        <td style={{ fontWeight: 600 }}>{o.number}</td>
+                        <td style={{ textTransform: "uppercase", fontSize: "0.85rem" }}>{o.customer?.name || "—"}</td>
+                        <td>
+                          <div style={{ fontWeight: 700 }}>{inr(o.grandTotal)}</div>
+                          {o.status !== "cancelled" && bal > 0 && (
+                            <div style={{ fontSize: "0.75rem", color: "#dc2626" }}>({inr(bal)} unpaid)</div>
+                          )}
+                        </td>
+                        <td><span className={`sales-status sales-status--${pi.tone}`}>{pi.label}</span></td>
+                        <td style={{ textAlign: "right", color: "var(--color-text-muted)" }}>›</td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {total > 0 && (
+            <div className="sales-pagination">
+              <span className="sales-pagination__info">
+                Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
+              </span>
+              <div className="sales-pagination__controls">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                  <FiChevronLeft /> Prev
+                </button>
+                <span className="sales-pagination__page">Page {page} of {pages}</span>
+                <button
+                  disabled={page >= pages}
+                  onClick={() => setPage((p) => Math.min(pages, p + 1))}>
+                  Next <FiChevronRight />
+                </button>
+              </div>
+            </div>
+          )}
         </Card>
       )}
-
-      <Modal
-        open={open}
-        title="New Order"
-        onClose={() => setOpen(false)}
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={createOrder.isPending}>
-              {createOrder.isPending ? "Creating..." : "Create Order"}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={handleCreate}>
-          <FormField label="Customer *" htmlFor="o-customer">
-            <select id="o-customer" value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value })} required>
-              <option value="">Select customer</option>
-              {customers.map((c) => <option key={c._id} value={c._id}>{c.name} ({c.mobile})</option>)}
-            </select>
-          </FormField>
-          <FormField label="Showroom *" htmlFor="o-showroom">
-            <select id="o-showroom" value={form.showroom} onChange={(e) => setForm({ ...form, showroom: e.target.value })} required>
-              <option value="">Select showroom</option>
-              {showrooms.map((s) => <option key={s._id} value={s._id}>{s.name} ({s.code})</option>)}
-            </select>
-          </FormField>
-          <FormField label="Product *" htmlFor="o-product">
-            <select id="o-product" value={form.product} onChange={(e) => setForm({ ...form, product: e.target.value })} required>
-              <option value="">Select product</option>
-              {products.map((p) => <option key={p._id} value={p._id}>{p.name} ({p.sku})</option>)}
-            </select>
-          </FormField>
-          <FormField label="Quantity *" htmlFor="o-qty">
-            <input id="o-qty" type="number" min="1" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} required />
-          </FormField>
-          {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
-        </form>
-      </Modal>
     </div>
   );
 }

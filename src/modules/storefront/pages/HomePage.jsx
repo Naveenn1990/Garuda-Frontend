@@ -1,12 +1,21 @@
 // Storefront home: admin-managed hero banner, category chips, featured, new arrivals
 // and bestsellers.
 import { Link } from "react-router-dom";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiStar, FiZap, FiTrendingUp, FiClock, FiMessageCircle } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi";
 import { useShopProducts, useShopCategories, useShopTestimonials } from "../hooks/useShop";
 import ProductCard from "../components/ProductCard";
 import HeroBanner from "../components/HeroBanner";
 import { imageUrl } from "../utils";
+
+// Section identity map — same as the mobile app
+const SECTION_META = {
+  "Featured":          { icon: FiStar,          tag: "HANDPICKED",     tagColor: "#b58a2e", tagBg: "#fff6dc" },
+  "New Arrivals":      { icon: FiZap,           tag: "JUST IN",        tagColor: "#1a7f4e", tagBg: "#e6f7ec" },
+  "Bestsellers":       { icon: FiTrendingUp,    tag: "TOP SELLING",    tagColor: "#c0392b", tagBg: "#fdecea" },
+  "Latest Products":   { icon: FiClock,         tag: "RECENTLY ADDED", tagColor: "#1a5fa8", tagBg: "#e8f0fe" },
+  "What Our Customers Say": { icon: FiMessageCircle, tag: "REVIEWS",   tagColor: "#6b4fa8", tagBg: "#f0ebff" },
+};
 
 // Descriptive tags + tagline per category (for the category cards). Falls back to
 // generic labels for any category not listed, so it stays dynamic.
@@ -23,24 +32,86 @@ function categoryMeta(name) {
   return map[key] || { tagA: "Best Sellers", tagB: "New Arrivals", tagline: "Explore the collection" };
 }
 
-function ProductRow({ title, subtitle, params, viewAllTo }) {
+function SectionHead({ title, viewAllTo }) {
+  const meta = SECTION_META[title] || { icon: FiStar, tag: "", tagColor: "#b58a2e", tagBg: "#fff6dc" };
+  const Icon = meta.icon;
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+      {/* Left: icon bubble + badge + title */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {/* Icon bubble */}
+        <div style={{
+          width: 44, height: 44, borderRadius: 14,
+          backgroundColor: meta.tagBg,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
+        }}>
+          <Icon size={20} color={meta.tagColor} />
+        </div>
+
+        <div>
+          {/* Badge tag */}
+          {meta.tag && (
+            <div style={{
+              display: "inline-block",
+              backgroundColor: meta.tagBg,
+              color: meta.tagColor,
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              padding: "2px 8px",
+              borderRadius: 4,
+              marginBottom: 4,
+              textTransform: "uppercase",
+            }}>
+              {meta.tag}
+            </div>
+          )}
+          {/* Title */}
+          <h2 style={{
+            margin: 0,
+            fontSize: "1.35rem",
+            fontWeight: 800,
+            color: "#16130e",
+            lineHeight: 1.2,
+          }}>
+            {title}
+          </h2>
+        </div>
+      </div>
+
+      {/* View all button */}
+      {viewAllTo && (
+        <Link
+          to={viewAllTo}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "8px 16px",
+            borderRadius: 999,
+            backgroundColor: "#16130e",
+            color: "#fff",
+            fontSize: 13,
+            fontWeight: 700,
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          View all <FiArrowRight size={14} />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function ProductRow({ title, params, viewAllTo }) {
   const { data, isLoading } = useShopProducts({ limit: 8, ...params });
   const items = data?.items || [];
   if (!isLoading && items.length === 0) return null;
   return (
     <section className="sf-section">
-      <div className="sf-rowhead">
-        <div className="sf-rowhead__titles">
-          <h2 className="sf-rowhead__title">{title}</h2>
-          {subtitle && <p className="sf-rowhead__sub">{subtitle}</p>}
-          <span className="sf-rowhead__rule" />
-        </div>
-        {viewAllTo && (
-          <Link to={viewAllTo} className="sf-rowhead__all">
-            View all <span>→</span>
-          </Link>
-        )}
-      </div>
+      <SectionHead title={title} viewAllTo={viewAllTo} />
       {isLoading ? (
         <p>Loading...</p>
       ) : (
@@ -131,16 +202,14 @@ export function HomePage() {
         </section>
       )}
 
-      <ProductRow title="Featured" subtitle="Handpicked products we love" params={{ featured: true }} viewAllTo="/shop?featured=true" />
-      <ProductRow title="New Arrivals" subtitle="Fresh additions to our catalogue" params={{ newArrival: true }} viewAllTo="/shop?newArrival=true" />
-      <ProductRow title="Bestsellers" subtitle="What customers are buying most" params={{ bestseller: true }} viewAllTo="/shop?bestseller=true" />
-      <ProductRow title="Latest Products" subtitle="The newest in our store" params={{ sort: "newest" }} viewAllTo="/shop" />
+      <ProductRow title="Featured" params={{ featured: true }} viewAllTo="/shop?featured=true" />
+      <ProductRow title="New Arrivals" params={{ newArrival: true }} viewAllTo="/shop?newArrival=true" />
+      <ProductRow title="Bestsellers" params={{ bestseller: true }} viewAllTo="/shop?bestseller=true" />
+      <ProductRow title="Latest Products" params={{ sort: "newest" }} viewAllTo="/shop" />
 
       {testimonials.length > 0 && (
         <section className="sf-section">
-          <div className="sf-cathead">
-            <h2>What Our Customers Say</h2>
-          </div>
+          <SectionHead title="What Our Customers Say" />
           <div className="sf-testimonials">
             {testimonials.map((t) => (
               <div className="sf-testimonial" key={t._id}>

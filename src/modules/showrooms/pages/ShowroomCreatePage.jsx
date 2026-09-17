@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader, Card, FormField, Button } from "../../../components";
 import { useCreateShowroom } from "../hooks/useShowrooms";
+import CoordinatePicker from "../components/CoordinatePicker";
 
 const initial = {
   name: "",
@@ -13,6 +14,8 @@ const initial = {
   city: "",
   state: "",
   pincode: "",
+  lat: "",
+  lng: "",
   phone: "",
   email: "",
   gstin: "",
@@ -69,6 +72,16 @@ export function ShowroomCreatePage() {
               <input id="pincode" value={form.pincode} onChange={set("pincode")} />
             </FormField>
           </div>
+
+          <div className="form-section__title">Map Coordinates</div>
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", margin: "0 0 12px" }}>
+            Set the map pin for this showroom — customers use this to find the nearest store.
+          </p>
+          <CoordinatePicker
+            lat={form.lat}
+            lng={form.lng}
+            onChange={({ lat, lng }) => setForm((f) => ({ ...f, lat, lng }))}
+          />
 
           <div className="form-section__title">Contact Information</div>
           <div className="form-grid">

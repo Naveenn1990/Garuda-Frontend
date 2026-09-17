@@ -23,10 +23,40 @@ export function usePermissionCatalog() {
   });
 }
 
+export function useRole(id) {
+  return useQuery({
+    enabled: Boolean(id),
+    queryKey: ["roles", id],
+    queryFn: async () => {
+      const data = await roleService.get(id);
+      return data.item;
+    },
+  });
+}
+
 export function useCreateRole() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (payload) => roleService.create(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["roles"] }),
+  });
+}
+
+export function useUpdateRole(id) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => roleService.update(id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["roles"] });
+      qc.invalidateQueries({ queryKey: ["roles", id] });
+    },
+  });
+}
+
+export function useDeleteRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => roleService.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["roles"] }),
   });
 }

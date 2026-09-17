@@ -147,7 +147,7 @@ export function ShopPage() {
         <div className="sf-shop__topbar">
           <span className="sf-shop__count">
             {query.q ? `Results for "${query.q}" · ` : ""}
-            {data?.total ?? 0} products
+            <strong>{data?.total ?? 0}</strong> products
           </span>
           <div className="sf-shop__topright">
             {/* Mobile filter button */}

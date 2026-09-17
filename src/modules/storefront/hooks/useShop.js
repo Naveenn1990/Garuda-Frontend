@@ -16,6 +16,21 @@ export function useShopProducts(params = {}) {
   });
 }
 
+// Typeahead search for the navbar suggestions dropdown. Skips the request
+// entirely until there's a term, and keeps the result set small.
+export function useProductSearch(term, limit = 6) {
+  const q = (term || "").trim();
+  return useQuery({
+    enabled: q.length > 0,
+    queryKey: ["shop-search", q, limit],
+    queryFn: async () => {
+      const { data } = await api.get("/shop/products", { params: { q, limit } });
+      return data.items || [];
+    },
+    staleTime: 60 * 1000,
+  });
+}
+
 // Single product + related.
 export function useShopProduct(id) {
   return useQuery({
@@ -49,8 +64,7 @@ export function useShopBrands() {
 }
 
 // Active home banners for the hero.
-export function useShopBanners() {
-  return useQuery({
+export function useShopBanners() {  return useQuery({
     queryKey: ["shop-banners"],
     queryFn: async () => {
       const { data } = await api.get("/shop/banners");
@@ -88,5 +102,29 @@ export function useSubmitEnquiry() {
       const { data } = await api.post("/shop/enquiry", payload);
       return data;
     },
+  });
+}
+
+// Public active coupons — shown at checkout so customers can browse and apply.
+export function useShopCoupons() {
+  return useQuery({
+    queryKey: ["shop-coupons"],
+    queryFn: async () => {
+      const { data } = await api.get("/shop/coupons");
+      return data.items || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+// Public About page content (admin-editable CMS singleton).
+export function useAboutContent() {
+  return useQuery({
+    queryKey: ["shop-about"],
+    queryFn: async () => {
+      const { data } = await api.get("/shop/about");
+      return data.item || null;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 }

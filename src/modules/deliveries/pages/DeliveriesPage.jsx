@@ -11,7 +11,9 @@ const STATUSES = ["pending", "scheduled", "dispatched", "delivered", "failed"];
 export function DeliveriesPage() {
   const { hasPermission } = usePermissions();
   const { data: rows = [], isLoading, isError } = useDeliveries();
-  const { data: orders = [] } = useOrders();
+  // useOrders now returns a paginated payload { items, total, ... }; pull the array.
+  const { data: ordersData } = useOrders();
+  const orders = ordersData?.items || [];
   const createDelivery = useCreateDelivery();
   const updateDelivery = useUpdateDelivery();
 

@@ -1,0 +1,368 @@
+/* BusinessSettings.css - myBillBook Architecture with Garuda Warm Cream & Gold Palette */
+
+.biz-settings-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: #fbf9f4;
+  color: #1c1b17;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* 1. Left Settings Sidebar */
+.biz-settings-sidebar {
+  background: #fff6dc;
+  border-right: 1px solid #e8dfc7;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.biz-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 16px;
+  border-bottom: 1px solid #ede6d6;
+  margin-bottom: 8px;
+}
+
+.biz-brand-logo-small {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #e5dcc4;
+  padding: 2px;
+}
+
+.biz-brand-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #1c1b17;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.biz-brand-phone {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #787163;
+}
+
+.biz-btn-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c1b17;
+  color: #ffffff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 20px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.12s;
+}
+
+.biz-btn-back:hover {
+  background: #3b372f;
+}
+
+.biz-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #4a4539;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s;
+  width: 100%;
+}
+
+.biz-nav-item:hover {
+  background: #fdfaf2;
+  color: #1c1b17;
+}
+
+.biz-nav-item.active {
+  background: #ecdab0;
+  color: #6b4a0f;
+  font-weight: 700;
+}
+
+.biz-nav-item__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.biz-badge-new {
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* 2. Main Content Area */
+.biz-settings-main {
+  padding: 24px 32px 60px;
+  overflow-y: auto;
+  max-width: 1100px;
+}
+
+/* Header */
+.biz-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ede6d6;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.biz-title-area h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1c1b17;
+}
+
+.biz-title-area p {
+  margin: 4px 0 0;
+  font-size: 0.86rem;
+  color: #787163;
+}
+
+.biz-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.biz-btn-cancel {
+  background: #ffffff;
+  border: 1px solid #dcd3be;
+  color: #4a4539;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.biz-btn-cancel:hover {
+  background: #f5f0e1;
+}
+
+.biz-btn-save {
+  background: #c68629;
+  border: 1px solid #b3751e;
+  color: #ffffff;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(198, 134, 41, 0.25);
+  transition: all 0.12s;
+}
+
+.biz-btn-save:hover {
+  background: #b3751e;
+}
+
+/* Form Container */
+.biz-settings-card {
+  background: #ffffff;
+  border: 1px solid #e8dfc7;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Logo Upload & Name Row */
+.biz-logo-name-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.biz-logo-upload-wrap {
+  position: relative;
+  width: 140px;
+  height: 90px;
+  border: 2px dashed #d5caa8;
+  border-radius: 12px;
+  background: #faf7ef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.15s;
+}
+
+.biz-logo-upload-wrap:hover {
+  border-color: #c68629;
+  background: #fff6dc;
+}
+
+.biz-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.biz-logo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 27, 23, 0.65);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.biz-logo-upload-wrap:hover .biz-logo-overlay {
+  opacity: 1;
+}
+
+/* Form Groups & Inputs */
+.biz-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.biz-form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.biz-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.biz-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #3b372f;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.biz-req {
+  color: #dc2626;
+}
+
+.biz-input,
+.biz-select,
+.biz-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #dcd3be;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #1c1b17;
+  background: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.biz-input:focus,
+.biz-select:focus,
+.biz-textarea:focus {
+  border-color: #c68629;
+  box-shadow: 0 0 0 3px rgba(198, 134, 41, 0.15);
+}
+
+/* Radio Group */
+.biz-radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.biz-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid #e5dcc4;
+  background: #faf7ef;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.biz-radio-label:has(input:checked) {
+  background: #c68629;
+  border-color: #b3751e;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.biz-radio-label input {
+  accent-color: #ffffff;
+}
+
+/* Signature & Extra Details */
+.biz-signature-dashed-box {
+  border: 2px dashed #d5caa8;
+  background: #fffdfa;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #8a6016;
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-height: 100px;
+  transition: all 0.15s;
+}
+
+.biz-signature-dashed-box:hover {
+  background: #fff6dc;
+  border-color: #c68629;
+}
+
+.biz-extra-row {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 10px;
+  align-items: center;
+}

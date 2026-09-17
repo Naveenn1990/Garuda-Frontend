@@ -1,0 +1,149 @@
+/* Sales Invoices — myBillBook-style stat cards, filter bar, table */
+
+/* ── Stat cards ── */
+.sales-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.sales-stat {
+  background: #fff;
+  border: 1px solid var(--color-line, #eee);
+  border-radius: 12px;
+  padding: 16px 18px;
+  border-left: 4px solid #cbd5e1;
+}
+.sales-stat__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #6b7280);
+  margin-bottom: 8px;
+}
+.sales-stat__value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #16130e;
+}
+.sales-stat--total    { border-left-color: #6366f1; background: #f5f3ff; }
+.sales-stat--total .sales-stat__head { color: #4f46e5; }
+.sales-stat--paid     { border-left-color: #16a34a; }
+.sales-stat--paid .sales-stat__head { color: #16a34a; }
+.sales-stat--unpaid   { border-left-color: #dc2626; }
+.sales-stat--unpaid .sales-stat__head { color: #dc2626; }
+.sales-stat--cancelled{ border-left-color: #9ca3af; }
+
+/* ── Filter bar ── */
+.sales-filterbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.sales-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  max-width: 360px;
+  background: #fff;
+  border: 1px solid var(--color-line, #e5e7eb);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: var(--color-text-muted);
+}
+.sales-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 0.9rem;
+  color: #16130e;
+}
+.sales-range {
+  padding: 9px 14px;
+  border: 1px solid var(--color-line, #e5e7eb);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ── Table rows ── */
+.sales-table .sales-row {
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.sales-table .sales-row:hover {
+  background: #faf7ef;
+}
+
+/* Status pills */
+.sales-status {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.sales-status--paid      { background: #dcfce7; color: #15803d; }
+.sales-status--unpaid    { background: #fee2e2; color: #b91c1c; }
+.sales-status--partial   { background: #fef3c7; color: #92400e; }
+.sales-status--cancelled { background: #f3f4f6; color: #6b7280; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .sales-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Pagination ── */
+.sales-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 4px 4px;
+  border-top: 1px solid var(--color-line, #eee);
+  margin-top: 8px;
+}
+.sales-pagination__info {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #6b7280);
+}
+.sales-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sales-pagination__controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 14px;
+  border: 1px solid var(--color-line, #e5e7eb);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.sales-pagination__controls button:hover:not(:disabled) {
+  background: #faf7ef;
+}
+.sales-pagination__controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.sales-pagination__page {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #16130e;
+}

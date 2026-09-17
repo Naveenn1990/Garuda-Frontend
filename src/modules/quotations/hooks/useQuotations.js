@@ -41,4 +41,13 @@ export function useConvertQuotation() {
   });
 }
 
+// Send quotation via email / mark sent.
+export function useSendQuotation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.post(`/quotations/${id}/send`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["quotations"] }),
+  });
+}
+
 export default useQuotations;

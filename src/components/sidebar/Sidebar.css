@@ -1,67 +1,280 @@
-.sidebar {
-  background: #FFF6DC;
+/* myBillBook-style sidebar with original Garuda Cream & Gold theme */
+.mybillbook-sidebar {
+  background: #fff6dc;
   color: #1c1b17;
   height: 100vh;
   overflow-y: auto;
-  padding-bottom: 24px;
-  border-right: 1px solid var(--color-border);
+  width: 250px;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e8dfc7;
+  user-select: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.sidebar__brand {
+/* 1. Header with Logo & Business Profile */
+.mybillbook-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #e8dfc7;
+  background: #fdfaf2;
+}
+
+.mybillbook-brand__logo-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e5dcc4;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 16px;
-  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  padding: 2px;
 }
 
-.sidebar__logo {
+.mybillbook-brand__logo {
   width: 100%;
-  max-width: 150px;
-  height: auto;
+  height: 100%;
   object-fit: contain;
 }
 
-.sidebar__nav {
-  padding: 12px 8px;
+.mybillbook-brand__info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.sidebar__group {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9a958a;
-  padding: 14px 12px 4px;
+.mybillbook-brand__name {
+  color: #1c1b17;
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.sidebar__link {
+.mybillbook-brand__phone {
+  color: #787163;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* 2. Top '+ Create Sales Invoice' Button */
+.mybillbook-action-wrap {
+  padding: 14px 14px 6px;
+  position: relative;
+}
+
+.mybillbook-action-btn-group {
+  display: flex;
+  width: 100%;
+  background: var(--brand-gold, #c68629);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(198, 134, 41, 0.25);
+  transition: transform 0.1s, filter 0.15s;
+}
+
+.mybillbook-action-btn-group:hover {
+  filter: brightness(1.08);
+}
+
+.mybillbook-create-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  color: #1c1b17;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: background 0.15s, color 0.15s;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
 }
 
-.sidebar__icon {
-  font-size: 1.05rem;
+.mybillbook-create-btn__icon {
+  font-size: 1.15rem;
+}
+
+.mybillbook-create-btn__arrow {
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Dropdown Menu */
+.mybillbook-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 14px;
+  right: 14px;
+  background: #ffffff;
+  border: 1px solid #e5dcc4;
+  border-radius: 10px;
+  padding: 6px 0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.mybillbook-dropdown-menu button {
+  background: transparent;
+  border: none;
   color: #1c1b17;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.mybillbook-dropdown-menu button:hover {
+  background: #fff6dc;
+  color: #8a6016;
+}
+
+/* 3. Navigation Sections */
+.mybillbook-nav {
+  padding: 10px 10px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mybillbook-section__title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8c826c;
+  padding: 4px 10px 6px;
+}
+
+.mybillbook-section__items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Links */
+.mybillbook-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 20px;
+  color: #3b372f;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  background: transparent;
+  border: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.mybillbook-link--action {
+  color: #8a6016;
+  font-weight: 700;
+}
+
+.mybillbook-link--action:hover {
+  background: #faeed0;
+  color: #6b4a0f;
+}
+
+.mybillbook-icon--action {
+  color: #c68629 !important;
+}
+
+
+.mybillbook-link__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mybillbook-icon {
+  font-size: 1.15rem;
+  color: #786f5c;
   flex-shrink: 0;
 }
 
-.sidebar__link:hover {
-  background: var(--brand-gold-soft);
+.mybillbook-chevron {
+  font-size: 0.85rem;
+  color: #8c826c;
+  transition: transform 0.2s;
 }
 
-.sidebar__link.active {
-  background: var(--brand-gold);
+.mybillbook-link:hover {
+  background: #faeed0;
   color: #1c1b17;
-  font-weight: 600;
 }
 
-.sidebar__link.active .sidebar__icon {
+.mybillbook-link:hover .mybillbook-icon {
   color: #1c1b17;
+}
+
+/* Active State (myBillBook Rounded Pill in Gold/Cream theme) */
+.mybillbook-link.active {
+  background: #ecdab0;
+  color: #6b4a0f;
+  font-weight: 700;
+}
+
+.mybillbook-link.active .mybillbook-icon {
+  color: #6b4a0f;
+}
+
+.mybillbook-link.active .mybillbook-chevron {
+  color: #6b4a0f;
+}
+
+/* Submenus */
+.mybillbook-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 6px 36px;
+}
+
+.mybillbook-submenu__link {
+  display: block;
+  padding: 7px 12px;
+  border-radius: 12px;
+  color: #696252;
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 500;
+  transition: all 0.12s;
+}
+
+.mybillbook-submenu__link:hover {
+  color: #1c1b17;
+  background: #faeed0;
+}
+
+.mybillbook-submenu__link.active {
+  color: #6b4a0f;
+  font-weight: 700;
+  background: #faeed0;
 }

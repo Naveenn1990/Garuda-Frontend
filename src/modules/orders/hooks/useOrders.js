@@ -1,16 +1,32 @@
 // Data hooks for the Orders module.
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { api } from "../../../services";
 
+// Paginated + filtered order list. Returns the full payload
+// { items, page, limit, total, pages } so the UI can render pagination.
 export function useOrders(params = {}) {
   return useQuery({
-    queryKey: ["orders", params],
+    queryKey: ["orders", "list", params],
     queryFn: async () => {
       const { data } = await api.get("/orders", { params });
-      return data.items || [];
+      return data; // { items, page, limit, total, pages }
     },
+    placeholderData: keepPreviousData,
   });
 }
+
+// Server-side stat totals for the cards (respects the same filters as the list).
+export function useOrderStats(params = {}) {
+  return useQuery({
+    queryKey: ["orders", "stats", params],
+    queryFn: async () => {
+      const { data } = await api.get("/orders/stats", { params });
+      return data.stats; // { totalSales, paid, unpaid, cancelled }
+    },
+    placeholderData: keepPreviousData,
+  });
+}
+
 export function useOrder(id) {
   return useQuery({
     enabled: Boolean(id),

@@ -31,6 +31,25 @@ export function useCreateShowroom() {
   });
 }
 
+export function useUpdateShowroom(id) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => showroomService.update(id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["showrooms"] });
+      qc.invalidateQueries({ queryKey: ["showrooms", id] });
+    },
+  });
+}
+
+export function useDeleteShowroom() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => showroomService.remove(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["showrooms"] }),
+  });
+}
+
 // Targets + performance for a showroom.
 export function useShowroomTargets(showroomId) {
   return useQuery({

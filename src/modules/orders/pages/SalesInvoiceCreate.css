@@ -1,0 +1,906 @@
+/* SalesInvoiceCreate.css - myBillBook Architecture with Garuda Warm Cream & Gold Theme */
+
+.invoice-create-container {
+  min-height: 100vh;
+  background: #fbf9f4;
+  color: #1c1b17;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: 60px;
+}
+
+/* 1. Top Header Navbar */
+.invoice-top-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #ede6d6;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.invoice-top-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.invoice-btn-exit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #faf7ef;
+  border: 1px solid #e0d8c3;
+  color: #4a4539;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.invoice-btn-exit:hover {
+  background: #fff6dc;
+  color: #8a6016;
+  border-color: #c68629;
+}
+
+.invoice-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1c1b17;
+}
+
+/* Center Mode Switcher */
+.invoice-mode-toggle {
+  display: flex;
+  background: #faf7ef;
+  border: 1px solid #e8dfc7;
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.invoice-mode-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #6b6352;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-mode-btn.active {
+  background: #c68629;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(198, 134, 41, 0.25);
+}
+
+/* Top Right Actions */
+.invoice-top-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.invoice-btn-save-new {
+  background: #fff6dc;
+  border: 1px solid #e0ce9f;
+  color: #8a6016;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.invoice-btn-save-new:hover {
+  background: #ffeed0;
+  border-color: #c68629;
+}
+
+.invoice-btn-save-primary {
+  background: #c68629;
+  border: 1px solid #b3751e;
+  color: #ffffff;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(198, 134, 41, 0.25);
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-btn-save-primary:hover {
+  background: #b3751e;
+  box-shadow: 0 4px 12px rgba(198, 134, 41, 0.35);
+}
+
+/* 2. Main Sheet Canvas */
+.invoice-sheet {
+  max-width: 1280px;
+  margin: 20px auto 0;
+  background: #ffffff;
+  border: 1px solid #e8dfc7;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 3. Top Bill To & Invoice Meta Section */
+.invoice-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 24px;
+}
+
+/* Grid/flex children default to min-width:auto, which lets long content (like a
+   full warehouse address in a <select>) overflow the column. Clamp it. */
+.invoice-meta-grid > * {
+  min-width: 0;
+}
+
+/* Bill To Card */
+.invoice-bill-to-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invoice-box-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8c826c;
+}
+
+.invoice-party-dashed-btn {
+  border: 2px dashed #d5caa8;
+  background: #fffdfa;
+  border-radius: 12px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #8a6016;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.15s;
+  min-height: 110px;
+}
+
+.invoice-party-dashed-btn:hover {
+  background: #fff6dc;
+  border-color: #c68629;
+  transform: translateY(-1px);
+}
+
+.invoice-party-selected-card {
+  border: 1px solid #e5dcc4;
+  background: #faf7ef;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.invoice-party-info-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1c1b17;
+}
+
+.invoice-party-info-sub {
+  font-size: 0.84rem;
+  color: #6b6352;
+  margin-top: 3px;
+}
+
+/* Invoice Meta Right Box */
+.invoice-details-box {
+  background: #faf7ef;
+  border: 1px solid #e8dfc7;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invoice-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ede6d6;
+  padding-bottom: 8px;
+}
+
+.invoice-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.invoice-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.invoice-meta-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #4a4539;
+}
+
+.invoice-meta-input,
+.invoice-meta-select {
+  padding: 8px 12px;
+  border: 1px solid #dcd3be;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1c1b17;
+  background: #ffffff;
+  outline: none;
+  /* Keep controls inside their grid column: never let a long option label (e.g. a
+     full warehouse address) stretch the select and push the box off-screen. */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+}
+
+/* Selects can still overflow via their option text in some engines; clamp them. */
+.invoice-details-box,
+.invoice-details-grid,
+.invoice-meta-field {
+  min-width: 0;
+}
+
+.invoice-meta-input:focus,
+.invoice-meta-select:focus {
+  border-color: #c68629;
+  box-shadow: 0 0 0 2px rgba(198, 134, 41, 0.15);
+}
+
+/* 4. Table Section */
+.invoice-table-wrap {
+  border: 1px solid #e5dcc4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.invoice-table th {
+  background: #faf7ef;
+  color: #6b6352;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5dcc4;
+}
+
+.invoice-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0e8d5;
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+.invoice-table tbody tr:hover {
+  background: #fdfbf7;
+}
+
+.invoice-item-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #dcd3be;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  color: #1c1b17;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.invoice-item-input:focus {
+  border-color: #c68629;
+}
+
+/* Add Item & Scan Barcode Action Row */
+.invoice-add-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #fffdfa;
+  border-bottom: 1px solid #e5dcc4;
+}
+
+.invoice-btn-add-item {
+  background: transparent;
+  border: none;
+  color: #8a6016;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-btn-add-item:hover {
+  color: #c68629;
+}
+
+.invoice-btn-scan-barcode {
+  background: #faf7ef;
+  border: 1px solid #dcd3be;
+  color: #4a4539;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-btn-scan-barcode:hover {
+  background: #fff6dc;
+  color: #8a6016;
+  border-color: #c68629;
+}
+
+/* Table Subtotal Summary Row */
+.invoice-table-subtotal-row {
+  background: #faf7ef;
+  font-weight: 700;
+  color: #1c1b17;
+}
+
+/* 5. Bottom Section: Left Notes/Bank/UPI & Right Financials */
+.invoice-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Left Bottom Widgets */
+.invoice-bottom-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.invoice-expandable-btn {
+  background: transparent;
+  border: none;
+  color: #8a6016;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+}
+
+.invoice-expandable-btn:hover {
+  text-decoration: underline;
+}
+
+/* Bank Details Card */
+.invoice-bank-card {
+  border: 1px solid #e5dcc4;
+  background: #faf7ef;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.invoice-bank-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+
+.invoice-bank-label {
+  color: #787163;
+  font-weight: 600;
+}
+
+.invoice-bank-value {
+  color: #1c1b17;
+  font-weight: 700;
+}
+
+/* UPI & QR Code Card */
+.invoice-upi-card {
+  border: 1px solid #e5dcc4;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.invoice-upi-qr-preview {
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  border: 1px solid #e5dcc4;
+  object-fit: contain;
+  background: #fff;
+  padding: 2px;
+}
+
+.invoice-upi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.invoice-upi-id-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1c1b17;
+}
+
+.invoice-upi-upload-btn {
+  background: #fff6dc;
+  border: 1px solid #e0ce9f;
+  color: #8a6016;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+}
+
+.invoice-upi-upload-btn:hover {
+  background: #ffeed0;
+}
+
+/* Right Financial Totals Card */
+.invoice-financials-card {
+  border: 1px solid #e8dfc7;
+  background: #faf7ef;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invoice-calc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #4a4539;
+}
+
+.invoice-calc-row strong {
+  color: #1c1b17;
+}
+
+.invoice-calc-grand-total {
+  border-top: 2px solid #e5dcc4;
+  border-bottom: 2px solid #e5dcc4;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1c1b17;
+}
+
+.invoice-received-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invoice-received-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #dcd3be;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1c1b17;
+  background: #fff;
+  outline: none;
+}
+
+.invoice-balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 6px 0;
+}
+
+.invoice-signature-dashed-box {
+  border: 2px dashed #d5caa8;
+  background: #fffdfa;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #8a6016;
+  font-weight: 700;
+  font-size: 0.86rem;
+  transition: all 0.15s;
+}
+
+.invoice-signature-dashed-box:hover {
+  background: #fff6dc;
+  border-color: #c68629;
+}
+
+/* =========================================================
+   GST TAX INVOICE PRINT & PREVIEW STYLES (Matching Reference)
+   ========================================================= */
+
+.tax-invoice-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.tax-invoice-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 820px;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2d9c4;
+  box-sizing: border-box;
+}
+
+.tax-invoice-card {
+  width: 100%;
+  max-width: 820px;
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  padding: 18px 20px;
+  box-sizing: border-box;
+}
+
+.tax-invoice-top-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tax-invoice-title-text {
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: #000;
+}
+
+.tax-invoice-badge {
+  border: 1px solid #777;
+  padding: 1px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #444;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.tax-invoice-box {
+  border: 1px solid #333;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tax-invoice-header-row {
+  display: flex;
+  border-bottom: 1px solid #333;
+}
+
+.tax-invoice-company-col {
+  flex: 1.35;
+  display: flex;
+  gap: 14px;
+  padding: 10px 12px;
+  border-right: 1px solid #333;
+}
+
+.tax-invoice-company-logo {
+  max-width: 130px;
+  max-height: 55px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.tax-invoice-company-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: #111;
+  line-height: 1.35;
+}
+
+.tax-invoice-company-name {
+  font-weight: 800;
+  font-size: 14px;
+  color: #000;
+  line-height: 1.2;
+}
+
+.tax-invoice-meta-col {
+  flex: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.tax-invoice-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tax-invoice-meta-label {
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #111;
+}
+
+.tax-invoice-meta-value {
+  font-weight: 800;
+  font-size: 13px;
+  color: #000;
+}
+
+.tax-invoice-parties-row {
+  display: flex;
+  border-bottom: 1px solid #333;
+}
+
+.tax-invoice-party-col {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #111;
+  line-height: 1.4;
+}
+
+.tax-invoice-party-col:first-child {
+  border-right: 1px solid #333;
+}
+
+.tax-invoice-party-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #444;
+  text-transform: uppercase;
+}
+
+.tax-invoice-party-name {
+  font-weight: 800;
+  font-size: 12.5px;
+  color: #000;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+/* Items Table */
+.tax-invoice-items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tax-invoice-items-table th {
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
+  background: #f0f0f0;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 6px 8px;
+  color: #000;
+  text-transform: uppercase;
+}
+
+.tax-invoice-items-table th:last-child {
+  border-right: none;
+}
+
+.tax-invoice-items-table td {
+  border-right: 1px solid #333;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #111;
+  vertical-align: top;
+}
+
+.tax-invoice-items-table td:last-child {
+  border-right: none;
+}
+
+.tax-invoice-items-table tr.tax-subrow td {
+  font-style: italic;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.tax-invoice-items-table tr.tax-total-row td {
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  background: #f0f0f0;
+  font-weight: 800;
+  font-size: 11.5px;
+  padding: 6px 8px;
+}
+
+.tax-invoice-items-table tr.tax-balance-row td {
+  border-bottom: 1px solid #333;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+/* Tax Summary Table */
+.tax-invoice-tax-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+
+.tax-invoice-tax-table th {
+  border: 1px solid #333;
+  background: #f0f0f0;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.tax-invoice-tax-table td {
+  border: 1px solid #333;
+  font-size: 10.5px;
+  padding: 4px 6px;
+  text-align: right;
+}
+
+/* In Words */
+.tax-invoice-words-box {
+  padding: 6px 12px;
+  border-bottom: 1px solid #333;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Footer: Bank & Payment QR */
+.tax-invoice-footer-row {
+  display: flex;
+}
+
+.tax-invoice-bank-col {
+  flex: 1.1;
+  padding: 8px 12px;
+  border-right: 1px solid #333;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.tax-invoice-qr-col {
+  flex: 0.9;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tax-invoice-payment-brands {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.tax-brand-pill {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .tax-invoice-card,
+  .tax-invoice-card * {
+    visibility: visible;
+  }
+  .tax-invoice-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .tax-invoice-toolbar,
+  .invoice-top-bar,
+  .mybillbook-sidebar,
+  .sidebar {
+    display: none !important;
+  }
+}
+

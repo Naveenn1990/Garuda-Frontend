@@ -9,8 +9,33 @@ import { useProducts } from "../../products/hooks/useProducts";
 import { useInventory, useStockInward, useBulkInward, useStockDamage } from "../hooks/useInventory";
 import "./InventoryPage.css";
 
+// Bulk inward loads stock into warehouses only. showroomCode must be a warehouse code.
 const INWARD_HEADERS = ["sku", "showroomCode", "quantity", "note"];
-const INWARD_SAMPLE = ["FRIDGE-LG-260", "BLR-001", "50", "Opening stock"];
+const INWARD_SAMPLE = ["FRIDGE-LG-260", "WH-001", "50", "Opening stock (warehouse)"];
+
+// Group flat inventory rows into per-location buckets, warehouses first.
+function groupByLocation(rows) {
+  const map = new Map();
+  for (const r of rows) {
+    const loc = r.showroom || {};
+    const id = String(loc._id || "unknown");
+    if (!map.has(id)) {
+      map.set(id, {
+        id,
+        name: loc.name || "Unknown",
+        code: loc.code || "—",
+        type: loc.type || "showroom",
+        rows: [],
+      });
+    }
+    map.get(id).rows.push(r);
+  }
+  // Warehouses first, then showrooms; alphabetical within each.
+  return [...map.values()].sort((a, b) => {
+    if (a.type !== b.type) return a.type === "warehouse" ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+}
 
 const EXPORT_COLUMNS = [
   { header: "Product", value: (r) => r.product?.name || "" },
@@ -27,6 +52,9 @@ export function InventoryPage() {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { data: showrooms = [] } = useShowrooms();
+  // Inward/damage destinations are warehouses only (stock enters via warehouse,
+  // then transfers to showrooms).
+  const { data: warehouses = [] } = useShowrooms({ type: "warehouse" });
   const { data: products = [] } = useProducts();
 
   const [showroom, setShowroom] = useState("");
@@ -76,7 +104,7 @@ export function InventoryPage() {
     <div>
       <PageHeader
         title="Inventory"
-        subtitle="Stock levels across showrooms"
+        subtitle="Stock grouped by warehouse and showroom"
         actions={
           <div style={{ display: "flex", gap: 8 }}>
             <ExportButton rows={rows} columns={EXPORT_COLUMNS} filename="inventory.csv" />
@@ -94,81 +122,205 @@ export function InventoryPage() {
         }
       />
 
-      <div className="inv-filters">
+      {/* Top Low Stock Alert Banner */}
+      {(() => {
+        const totalLowStock = rows.filter((r) => (r.available || 0) <= (r.minStock || 0)).length;
+        if (totalLowStock > 0 && !lowStock) {
+          return (
+            <div
+              style={{
+                backgroundColor: "#fef3c7",
+                border: "1px solid #fde047",
+                borderRadius: 8,
+                padding: "12px 16px",
+                marginBottom: 16,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                color: "#854d0e",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: "1.2rem" }}>⚠️</span>
+                <div>
+                  <strong>Low Stock Alert:</strong> {totalLowStock} items across locations are at or below minimum safety thresholds.
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => setLowStock(true)}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: "#b45309",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  View Low Stock Items
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/transfers")}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: "#ffffff",
+                    color: "#854d0e",
+                    border: "1px solid #d97706",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  Stock Transfers
+                </button>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      })()}
+
+      <div className="inv-filters" style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
         <select
           className="search-input"
           style={{ maxWidth: 240 }}
           value={showroom}
           onChange={(e) => setShowroom(e.target.value)}
         >
-          <option value="">All Showrooms</option>
+          <option value="">All Locations</option>
           {showrooms.map((s) => (
             <option key={s._id} value={s._id}>
-              {s.name} ({s.code})
+              {s.type === "warehouse" ? "🏭 " : "🏪 "}{s.name} ({s.code})
             </option>
           ))}
         </select>
-        <label className="inv-lowstock">
-          <input
-            type="checkbox"
-            checked={lowStock}
-            onChange={(e) => setLowStock(e.target.checked)}
-          />
-          Low stock only
-        </label>
+
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            type="button"
+            onClick={() => setLowStock(false)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 20,
+              border: "1px solid var(--color-border)",
+              backgroundColor: !lowStock ? "var(--brand-gold-dark, #b45309)" : "#ffffff",
+              color: !lowStock ? "#ffffff" : "#475569",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            All Stock
+          </button>
+          <button
+            type="button"
+            onClick={() => setLowStock(true)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: 20,
+              border: "1px solid #f59e0b",
+              backgroundColor: lowStock ? "#f59e0b" : "#fffbeb",
+              color: lowStock ? "#ffffff" : "#b45309",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            ⚠️ Low Stock Only
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
         <Spinner />
       ) : isError ? (
         <p style={{ color: "var(--color-danger)" }}>Failed to load inventory. Is the API running?</p>
-      ) : (
+      ) : rows.length === 0 ? (
         <Card>
-          <div className="data-table__wrap" style={{ border: "none" }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>SKU</th>
-                  <th>Showroom</th>
-                  <th>Available</th>
-                  <th>Reserved</th>
-                  <th>Sold</th>
-                  <th>Damaged</th>
-                  <th>Min</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 ? (
-                  <tr>
-                    <td className="data-table__empty" colSpan={8}>
-                      No stock records{lowStock ? " below threshold" : ""}.
-                    </td>
-                  </tr>
-                ) : (
-                  rows.map((r) => {
-                    const low = r.available <= (r.minStock || 0);
-                    return (
-                      <tr key={r._id} className={low ? "inv-row--low" : ""}>
-                        <td>{r.product?.name || "—"}</td>
-                        <td>{r.product?.sku || "—"}</td>
-                        <td>{r.showroom?.code || "—"}</td>
-                        <td>
-                          {r.available}
-                          {low && <span className="inv-low-tag">low</span>}
-                        </td>
-                        <td>{r.reserved}</td>
-                        <td>{r.sold}</td>
-                        <td>{r.damaged}</td>
-                        <td>{r.minStock}</td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+          <p className="tab-empty">No stock records{lowStock ? " below threshold" : ""}.</p>
         </Card>
+      ) : (
+        // Group inventory rows by location (warehouse / showroom).
+        groupByLocation(rows).map((group) => {
+          const isWh = group.type === "warehouse";
+          const totalUnits = group.rows.reduce((s, r) => s + (r.available || 0), 0);
+          const lowInGroup = group.rows.filter((r) => r.available <= (r.minStock || 0)).length;
+          return (
+            <Card key={group.id} style={{ marginBottom: 16 }}>
+              {/* Location header */}
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                flexWrap: "wrap", gap: 8, marginBottom: 12,
+                paddingBottom: 12, borderBottom: "1px solid var(--color-line, #eee)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: "1.3rem" }}>{isWh ? "🏭" : "🏪"}</span>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: "1.05rem" }}>
+                      {group.name}
+                      <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", fontWeight: 500, marginLeft: 8 }}>
+                        ({group.code})
+                      </span>
+                    </div>
+                    <div style={{ fontSize: "0.78rem", color: "var(--color-text-muted)", textTransform: "capitalize" }}>
+                      {isWh ? "Warehouse" : "Showroom"}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 16, fontSize: "0.85rem" }}>
+                  <span><strong>{group.rows.length}</strong> products</span>
+                  <span><strong>{totalUnits}</strong> units</span>
+                  {lowInGroup > 0 && (
+                    <span style={{ color: "var(--color-danger)" }}>
+                      <strong>{lowInGroup}</strong> low
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="data-table__wrap" style={{ border: "none" }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>SKU</th>
+                      <th style={{ textAlign: "right" }}>Available</th>
+                      <th style={{ textAlign: "right" }}>Reserved</th>
+                      <th style={{ textAlign: "right" }}>Sold</th>
+                      <th style={{ textAlign: "right" }}>Damaged</th>
+                      <th style={{ textAlign: "right" }}>Min</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.rows.map((r) => {
+                      const low = r.available <= (r.minStock || 0);
+                      return (
+                        <tr key={r._id} className={low ? "inv-row--low" : ""}>
+                          <td>{r.product?.name || "—"}</td>
+                          <td style={{ fontFamily: "monospace", color: "var(--color-text-muted)" }}>{r.product?.sku || "—"}</td>
+                          <td style={{ textAlign: "right", fontWeight: 700 }}>
+                            {r.available}
+                            {low && <span className="inv-low-tag">low</span>}
+                          </td>
+                          <td style={{ textAlign: "right" }}>{r.reserved}</td>
+                          <td style={{ textAlign: "right" }}>{r.sold}</td>
+                          <td style={{ textAlign: "right" }}>{r.damaged}</td>
+                          <td style={{ textAlign: "right" }}>{r.minStock}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          );
+        })
       )}
 
       <Modal
@@ -202,20 +354,25 @@ export function InventoryPage() {
               ))}
             </select>
           </FormField>
-          <FormField label="Showroom *" htmlFor="inw-showroom">
+          <FormField label="Warehouse *" htmlFor="inw-showroom">
             <select
               id="inw-showroom"
               value={form.showroom}
               onChange={(e) => setForm({ ...form, showroom: e.target.value })}
               required
             >
-              <option value="">Select showroom</option>
-              {showrooms.map((s) => (
+              <option value="">Select warehouse</option>
+              {warehouses.map((s) => (
                 <option key={s._id} value={s._id}>
-                  {s.name} ({s.code})
+                  🏭 {s.name} ({s.code})
                 </option>
               ))}
             </select>
+            {warehouses.length === 0 && (
+              <p style={{ fontSize: "0.8rem", color: "var(--color-danger)", marginTop: 4 }}>
+                No warehouses found. Create a warehouse first (Showrooms → set type = Warehouse).
+              </p>
+            )}
           </FormField>
           <FormField label="Quantity *" htmlFor="inw-qty">
             <input

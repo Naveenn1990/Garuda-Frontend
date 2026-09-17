@@ -1057,16 +1057,41 @@
 .sf-shop__filterbtn {
   display: none;   /* shown only on mobile */
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   border: 1px solid #e2d8bd;
   background: #fff;
-  border-radius: 999px;
-  padding: 9px 16px;
+  border-radius: 12px;
+  padding: 10px 16px;
   font-size: 0.9rem;
   font-weight: 600;
   color: #16130e;
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(22, 19, 14, 0.04);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
+.sf-shop__filterbtn:hover { border-color: #caa64a; box-shadow: 0 3px 10px rgba(202, 166, 74, 0.15); }
+.sf-shop__filterbtn svg { color: #caa64a; font-size: 1.05rem; }
+
+/* Sort dropdown — styled to match the filter button (custom chevron) */
+.sf-shop__topright select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #e2d8bd;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 38px 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #16130e;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(22, 19, 14, 0.04);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23caa64a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.sf-shop__topright select:hover { border-color: #caa64a; box-shadow: 0 3px 10px rgba(202, 166, 74, 0.15); }
+.sf-shop__topright select:focus { outline: none; border-color: #caa64a; }
 
 /* Mobile filter drawer */
 .sf-fdrawer { position: fixed; inset: 0; z-index: 200; }
@@ -1113,12 +1138,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #efe8d4;
 }
 .sf-shop__count {
   color: #6b6250;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 500;
 }
+.sf-shop__count strong { color: #16130e; font-weight: 700; }
 
 /* ---- Wishlist (simple Myntra-style cards) ---- */
 .sf-wish__title {
@@ -3129,7 +3159,6 @@
 .sf-testimonial__name { font-weight: 700; color: #111; }
 .sf-testimonial__role { font-size: 0.82rem; color: #8a8a8a; }
 
-/* ---- Back button (all inner storefront pages) ---- */
 .sf-back {
   display: inline-flex;
   align-items: center;
@@ -3145,12 +3174,12 @@
   cursor: pointer;
   transition: background 0.18s, color 0.18s, border-color 0.18s;
 }
+
 .sf-back:hover {
   background: #16130e;
   color: #fff;
   border-color: #16130e;
 }
-
 /* ============================================================
    Account page mobile overrides (placed last so they always win
    over the base .sf-account rules defined earlier in this file).
@@ -3199,4 +3228,830 @@
   /* "Detect my location" smaller so it doesn't get clipped. */
   .sf-account .sf-auth__detect { font-size: 0.75rem; }
   .sf-account .sf-auth__addrhead { flex-wrap: wrap; gap: 4px; }
+}
+/* ============================================================
+   Shop page mobile overrides (placed last so they win over the
+   base .sf-grid / .sf-card rules defined earlier in this file).
+   On phones the product grid becomes 2 tight columns instead of
+   one giant single-column card.
+   ============================================================ */
+@media (max-width: 860px) {
+  /* 2 columns, smaller gap. */
+  .sf-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  /* Tighter card padding + let cards shrink. */
+  .sf-card {
+    padding: 10px 10px 12px;
+    border-radius: 12px;
+    min-width: 0;
+  }
+  /* Smaller product image area on mobile. */
+  .sf-card__media { height: 130px; padding: 6px 0 10px; }
+  .sf-card__wish { top: 8px; right: 8px; width: 26px; height: 26px; font-size: 1rem; }
+  .sf-card__name { font-size: 0.82rem; min-height: 2.4em; }
+  .sf-card__brand { font-size: 0.72rem; margin-top: 4px; }
+  .sf-card__price { margin-top: 6px; gap: 5px; }
+  .sf-card__now { font-size: 0.98rem; }
+  .sf-card__mrp { font-size: 0.76rem; }
+  .sf-card__off { font-size: 0.76rem; }
+  /* Compact Add to Cart button + qty stepper. */
+  .sf-card__add {
+    margin-top: 10px;
+    padding: 9px 10px;
+    font-size: 0.8rem;
+    gap: 5px;
+  }
+  .sf-card__qty { margin-top: 10px; }
+  .sf-card__qty button { width: 36px; height: 38px; font-size: 1.1rem; }
+  .sf-card__qty span { font-size: 0.85rem; }
+
+  /* Top bar: count on left, filter + sort on right, one tidy row. */
+  .sf-shop__topbar {
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+  }
+  .sf-shop__count { font-size: 0.82rem; flex-shrink: 0; }
+  .sf-shop__topright { gap: 8px; }
+  .sf-shop__filterbtn { padding: 8px 13px; font-size: 0.82rem; border-radius: 10px; }
+  .sf-shop__topright select { padding: 8px 32px 8px 12px; font-size: 0.82rem; border-radius: 10px; background-position: right 11px center; }
+}
+/* Very small phones: keep 2 columns but shrink image a touch more. */
+@media (max-width: 380px) {
+  .sf-grid { gap: 10px; }
+  .sf-card__media { height: 112px; }
+  .sf-card__now { font-size: 0.9rem; }
+  .sf-card__add { font-size: 0.75rem; padding: 8px; }
+}
+
+/* ============================================================
+   Navbar search suggestions (typeahead dropdown)
+   ============================================================ */
+/* Wrapper takes over the sizing the bare form used to have, so the navbar
+   layout is unchanged; the form then fills it. */
+.sf-search {
+  position: relative;
+  flex: 1 1 160px;
+  min-width: 120px;
+  max-width: 280px;
+  display: flex;
+}
+.sf-search .sf-nav__search {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+}
+
+.sf-search__clear {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: #9a8f73;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+.sf-search__clear:hover { color: #16130e; }
+
+.sf-search__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  /* Wider than the input so product names aren't truncated, but never wider
+     than the viewport. */
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border: 1px solid #e2d8bd;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(22, 19, 14, 0.14);
+  z-index: 200;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sf-search__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+.sf-search__item:hover { background: #fff6dc; }
+
+.sf-search__thumb {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #f7f3e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #9a8f73;
+}
+.sf-search__thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+.sf-search__meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sf-search__name {
+  font-size: 0.88rem;
+  color: #16130e;
+  font-weight: 500;
+  /* Keep suggestions to a single line so the list stays scannable. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sf-search__brand { font-size: 0.74rem; color: #6b6250; }
+.sf-search__price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #16130e;
+  flex-shrink: 0;
+}
+
+.sf-search__all {
+  display: block;
+  width: 100%;
+  padding: 11px 12px;
+  border: 0;
+  background: #faf8f2;
+  color: #b58a2e;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: center;
+}
+.sf-search__all:hover { background: #f0e6c8; }
+
+.sf-search__empty {
+  padding: 18px 14px;
+  text-align: center;
+  color: #6b6250;
+  font-size: 0.88rem;
+}
+
+/* On small screens let the search wrapper use the full nav width, and stretch the
+   panel to match it instead of using a fixed desktop width. */
+@media (max-width: 900px) {
+  .sf-search { max-width: none; }
+  .sf-search__panel {
+    width: auto;
+    left: 0;
+    right: 0;
+    max-width: none;
+  }
+  .sf-search__item { padding: 9px 10px; gap: 10px; }
+  .sf-search__thumb { width: 40px; height: 40px; }
+  .sf-search__name { font-size: 0.84rem; }
+  .sf-search__brand { font-size: 0.7rem; }
+  .sf-search__price { font-size: 0.82rem; }
+}
+
+/* Very small phones: drop the price so the name gets the room. */
+@media (max-width: 420px) {
+  .sf-search__price { display: none; }
+  .sf-search__thumb { width: 36px; height: 36px; }
+}
+
+/* ---- Store Locator (map + list layout) ---- */
+/* The JS uses inline grid; this media query collapses it on small screens. */
+@media (max-width: 860px) {
+  /* Target the layout div rendered by StoreLocatorPage */
+  div[style*="gridTemplateColumns: 380px"] {
+    display: flex !important;
+    flex-direction: column;
+  }
+  /* Map block: shorter on mobile, not sticky */
+  div[style*="position: sticky"][style*="height: 640px"] {
+    height: 340px !important;
+    position: static !important;
+  }
+  /* List: no fixed height on mobile — expand naturally */
+  div[style*="maxHeight: 640px"] {
+    max-height: none !important;
+  }
+}
+
+/* ============================================================
+   Account page — desktop-only nav items (Privacy, Terms, Delete)
+   Shown only on large screens (≥861px) so on mobile the sidebar
+   collapses to a compact pill row and these don't clutter it.
+   ============================================================ */
+
+/* Thin divider line between main nav items and legal/danger items */
+.sf-account__nav-divider {
+  height: 1px;
+  background: #ece4cd;
+  margin: 8px 4px;
+  /* Hidden on mobile — sidebar is a horizontal pill row there */
+}
+
+/* Desktop-only buttons — hidden by default, revealed on large screens */
+.sf-account__navbtn--desktop {
+  display: none;
+}
+
+@media (min-width: 861px) {
+  .sf-account__navbtn--desktop {
+    display: flex;
+  }
+}
+
+/* Danger button variant (Delete Account) */
+.sf-account__navbtn--danger {
+  color: #c0392b !important;
+}
+.sf-account__navbtn--danger svg {
+  color: #c0392b !important;
+}
+.sf-account__navbtn--danger:hover {
+  background: #fdecea !important;
+}
+.sf-account__navbtn--danger.is-active-danger {
+  background: #fdecea !important;
+  color: #c0392b !important;
+  font-weight: 700;
+}
+
+/* ---- Legal content (Privacy Policy / Terms & Conditions) ---- */
+.sf-legal {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 760px;
+}
+.sf-legal h3 {
+  margin: 20px 0 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #16130e;
+}
+.sf-legal h3:first-child {
+  margin-top: 0;
+}
+.sf-legal p {
+  margin: 0;
+  color: #56503f;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+/* ---- Delete Account panel ---- */
+.sf-delete-account {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 560px;
+}
+
+.sf-delete-account__warning {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fdecea;
+  border: 1px solid #f2c4c4;
+  border-radius: 12px;
+  padding: 18px 20px;
+  color: #7b1c1c;
+}
+.sf-delete-account__warning svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #c0392b;
+}
+.sf-delete-account__warning strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  color: #a93226;
+}
+.sf-delete-account__warning p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #7b1c1c;
+}
+
+.sf-delete-account__what {
+  background: #faf8f2;
+  border: 1px solid #e6e0ce;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.sf-delete-account__what p {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: #16130e;
+}
+.sf-delete-account__what ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sf-delete-account__what ul li {
+  font-size: 0.88rem;
+  color: #56503f;
+  line-height: 1.6;
+}
+
+.sf-delete-account__confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sf-delete-account__confirm label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #16130e;
+}
+.sf-delete-account__input {
+  padding: 12px 14px;
+  border: 1.5px solid #e2d8bd;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  transition: border-color 0.18s;
+}
+.sf-delete-account__input:focus {
+  outline: none;
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+.sf-delete-account__btn {
+  margin-top: 4px;
+  padding: 13px 24px;
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.18s;
+}
+.sf-delete-account__btn:hover {
+  background: #a93226;
+}
+.sf-delete-account__btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* On mobile hide the divider too (sidebar becomes horizontal pill row) */
+@media (max-width: 860px) {
+  .sf-account__nav-divider {
+    display: none;
+  }
+}
+
+/* ── Coupon input (checkout page) ─────────────────────────────────────────── */
+.sf-coupon {
+  border: 1.5px dashed #e2d8bd;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  background: #fffdf5;
+}
+.sf-coupon__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #b58a2e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.sf-coupon__row {
+  display: flex;
+  gap: 8px;
+}
+.sf-coupon__input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1.5px solid #e2d8bd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #fff;
+  color: #16130e;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.sf-coupon__input:focus {
+  border-color: #b58a2e;
+}
+.sf-coupon__btn {
+  padding: 9px 16px;
+  background: #16130e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.sf-coupon__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.sf-coupon__applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e6f7ec;
+  border: 1.5px solid #a8d5b5;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.sf-coupon__applied-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1a7f4e;
+}
+.sf-coupon__remove {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+.sf-coupon__remove:hover { color: #c0392b; }
+.sf-coupon__error {
+  color: #c0392b;
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
+/* Discount row in summary */
+.sf-summary__discount {
+  color: #1a7f4e !important;
+  font-weight: 600;
+}
+.sf-summary__discount span:last-child {
+  color: #1a7f4e;
+}
+
+/* ── Available coupons list (below coupon input) ──────────────────────────── */
+.sf-coupon__list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sf-coupon__list-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9a8f73;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+.sf-coupon__chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  border: 1.5px dashed #e2d8bd;
+  border-radius: 8px;
+  padding: 9px 12px;
+  transition: border-color 0.15s;
+}
+.sf-coupon__chip:hover {
+  border-color: #b58a2e;
+  background: #fffdf5;
+}
+.sf-coupon__chip-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.sf-coupon__chip-code {
+  font-size: 13px;
+  font-weight: 800;
+  color: #b58a2e;
+  letter-spacing: 0.08em;
+}
+.sf-coupon__chip-desc {
+  font-size: 11px;
+  color: #6b6250;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sf-coupon__chip-apply {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  background: #fff6dc;
+  border: 1.5px solid #b58a2e;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #b58a2e;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sf-coupon__chip-apply:hover {
+  background: #b58a2e;
+  color: #fff;
+}
+
+/* ============================================================
+   About page — dynamic
+   ============================================================ */
+.sf-about {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 4px 60px;
+}
+
+.sf-about__eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #b58a2e;
+  margin-bottom: 12px;
+}
+.sf-about__title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #16130e;
+  margin: 0 0 16px;
+  line-height: 1.15;
+}
+.sf-about__brand {
+  background: linear-gradient(90deg, #b58a2e, #caa64a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sf-about__lead {
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: #56503f;
+  margin: 0 0 14px;
+}
+
+/* Split section: image + content */
+.sf-about__split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 44px 0;
+}
+.sf-about__split--alt { padding-top: 20px; }
+.sf-about__split-img {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.10);
+  aspect-ratio: 4 / 3;
+}
+.sf-about__split-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sf-about__split-body { min-width: 0; }
+
+/* Story badge */
+.sf-about__story-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff6dc;
+  border: 1px solid #e2d8bd;
+  color: #b58a2e;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+/* Vision & Mission */
+.sf-about__vm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 8px 0 56px;
+}
+.sf-about__vm-card {
+  background: linear-gradient(160deg, #fffdf7, #faf6ea);
+  border: 1px solid #eee2c2;
+  border-radius: 18px;
+  padding: 32px 28px;
+}
+.sf-about__vm-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: #16130e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #caa64a;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+.sf-about__vm-card h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #16130e;
+  margin: 0 0 10px;
+}
+.sf-about__vm-card p {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #56503f;
+  margin: 0;
+}
+
+/* Live stats */
+.sf-about__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 20px 0 56px;
+}
+.sf-about__stat {
+  background: linear-gradient(160deg, #fffdf7, #fff6dc);
+  border: 1px solid #eee2c2;
+  border-radius: 16px;
+  padding: 26px 16px;
+  text-align: center;
+}
+.sf-about__stat-icon {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #eee2c2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b58a2e;
+  font-size: 20px;
+}
+.sf-about__stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #16130e;
+  line-height: 1;
+}
+.sf-about__stat-label {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #6b6250;
+  font-weight: 600;
+}
+
+/* Section heads */
+.sf-about__section-head {
+  text-align: center;
+  margin-bottom: 34px;
+}
+.sf-about__section-head h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #16130e;
+  margin: 8px 0 10px;
+}
+.sf-about__section-head p {
+  max-width: 560px;
+  margin: 0 auto;
+  color: #6b6250;
+}
+
+/* Why Garuda features */
+.sf-about__why { margin-bottom: 60px; }
+.sf-about__features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.sf-about__feature {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 28px 24px;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.sf-about__feature:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  border-color: #eee2c2;
+}
+.sf-about__feature-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #fff6dc, #f0e6c8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b58a2e;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+.sf-about__feature h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #16130e;
+  margin: 0 0 8px;
+}
+.sf-about__feature p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #6b6250;
+  margin: 0;
+}
+
+/* Story cards */
+.sf-about__story {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 56px;
+}
+.sf-about__story-card {
+  background: #faf8f2;
+  border: 1px solid #eee2c2;
+  border-radius: 16px;
+  padding: 26px 24px;
+}
+.sf-about__story-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #b58a2e;
+  margin: 0 0 10px;
+}
+.sf-about__story-card p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #56503f;
+  margin: 0;
+}
+
+/* CTA */
+.sf-about__cta {
+  text-align: center;
+  background: linear-gradient(160deg, #16130e, #2a2418);
+  border-radius: 20px;
+  padding: 48px 24px;
+  color: #fff;
+}
+.sf-about__cta h2 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.sf-about__cta p {
+  color: #d8cfb8;
+  margin: 0 0 22px;
+}
+.sf-about__cta-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .sf-about__stats { grid-template-columns: repeat(2, 1fr); }
+  .sf-about__features { grid-template-columns: 1fr; }
+  .sf-about__story { grid-template-columns: 1fr; }
+  .sf-about__split { grid-template-columns: 1fr; gap: 24px; padding: 28px 0; }
+  .sf-about__split-img { order: -1; }  /* image on top when stacked */
+  .sf-about__vm { grid-template-columns: 1fr; }
+  .sf-about__title { font-size: 1.8rem; }
 }

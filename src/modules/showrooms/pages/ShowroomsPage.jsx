@@ -1,9 +1,10 @@
 // Showrooms list page. Search box + Add Showroom button; rows link to the detail page.
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiTrash2 } from "react-icons/fi";
 import { PageHeader, DataTable, Button, Spinner } from "../../../components";
 import { usePermissions } from "../../../app/store/permissionStore";
-import { useShowrooms } from "../hooks/useShowrooms";
+import { useShowrooms, useDeleteShowroom } from "../hooks/useShowrooms";
 
 export function ShowroomsPage() {
   const navigate = useNavigate();
@@ -13,6 +14,13 @@ export function ShowroomsPage() {
     type: "showroom",
     ...(q ? { q } : {}),
   });
+  const deleteShowroom = useDeleteShowroom();
+
+  function handleDelete(e, row) {
+    e.stopPropagation(); // don't trigger the row-click navigation
+    if (!window.confirm(`Delete showroom "${row.name}"? This cannot be undone.`)) return;
+    deleteShowroom.mutate(row._id);
+  }
 
   const columns = [
     { key: "name", header: "Name" },
@@ -31,6 +39,25 @@ export function ShowroomsPage() {
       ),
     },
   ];
+
+  if (hasPermission("showrooms.delete")) {
+    columns.push({
+      key: "actions",
+      header: "",
+      render: (r) => (
+        <Button
+          variant="secondary"
+          onClick={(e) => handleDelete(e, r)}
+          disabled={deleteShowroom.isPending}
+          title="Delete showroom"
+          style={{ color: "var(--color-danger)", display: "inline-flex", alignItems: "center", gap: 6 }}
+        >
+          <FiTrash2 />
+          Delete
+        </Button>
+      ),
+    });
+  }
 
   return (
     <div>

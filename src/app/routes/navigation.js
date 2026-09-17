@@ -1,96 +1,197 @@
-// Single source of truth for sidebar navigation, grouped exactly per the spec:
-// Dashboard / CRM / SALES / CATALOGUE / INVENTORY / SHOWROOMS / REPORTS /
-// NOTIFICATIONS / ADMINISTRATION.
-//
-// Each item carries a `permission` key and an `icon` (react-icons component). The
-// sidebar hides items the user lacks permission for, and hides a whole group when
-// none of its items are visible. Items with no permission (e.g. Dashboard) are
-// always shown to authenticated users.
+// Navigation configuration styled exactly like myBillBook.
 import {
   FiGrid,
-  FiUsers,
   FiUserPlus,
-  FiFileText,
-  FiShoppingCart,
-  FiCreditCard,
-  FiTruck,
+  FiUsers,
   FiBox,
-  FiTag,
-  FiBookmark,
-  FiImage,
-  FiMessageSquare,
-  FiLayers,
-  FiRepeat,
-  FiHome,
-  FiDatabase,
+  FiFileText,
+  FiDollarSign,
+  FiRotateCcw,
+  FiFilePlus,
+  FiTruck,
+  FiShoppingBag,
+  FiArrowUpRight,
+  FiArrowDownLeft,
+  FiCreditCard,
   FiBarChart2,
-  FiBell,
+  FiGlobe,
+  FiMessageSquare,
+  FiSettings,
+  FiMonitor,
+  FiShoppingCart,
+  FiImage,
+  FiPercent,
   FiUserCheck,
   FiShield,
   FiActivity,
+  FiBell,
+  FiInfo,
 } from "react-icons/fi";
 
 export const navigation = [
   {
-    group: "Overview",
-    items: [{ label: "Dashboard", path: "/dashboard", icon: FiGrid }],
-  },
-  {
-    group: "CRM",
+    group: "GENERAL",
     items: [
-      { label: "Customers", path: "/customers", permission: "customers.view", icon: FiUsers },
-      { label: "Leads", path: "/leads", permission: "leads.view", icon: FiUserPlus },
-      { label: "Quotations", path: "/quotations", permission: "quotations.view", icon: FiFileText },
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+        icon: FiGrid,
+      },
+      {
+        label: "Create Party",
+        action: "partyModal",
+        icon: FiUserPlus,
+        permission: "customers.create",
+      },
+      {
+        label: "Parties",
+        path: "/customers",
+        icon: FiUsers,
+        permission: "customers.view",
+        subItems: [
+          { label: "All Customers", path: "/customers", permission: "customers.view" },
+          { label: "Leads Pipeline", path: "/leads", permission: "leads.view" },
+        ],
+      },
+      {
+        // One consolidated dropdown for everything item / stock / location related:
+        // creating items, the catalogue, inventory, godowns (warehouses) and showrooms.
+        label: "Items",
+        path: "/products",
+        icon: FiBox,
+        permission: "products.view",
+        subItems: [
+          { label: "Create Item", path: "/products/create", permission: "products.create" },
+          { label: "Products Catalog", path: "/products", permission: "products.view" },
+          { label: "Inventory Stock", path: "/inventory", permission: "inventory.view" },
+          { label: "Stock Ledger", path: "/inventory/ledger", permission: "inventory.view" },
+          { label: "Stock Transfer", path: "/transfers", permission: "inventory.transfer" },
+          { label: "Godowns / Warehouses", path: "/warehouses", permission: "showrooms.view" },
+          { label: "Showrooms", path: "/showrooms", permission: "showrooms.view" },
+          { label: "Categories", path: "/categories", permission: "categories.view" },
+          { label: "Brands", path: "/brands", permission: "brands.view" },
+        ],
+      },
     ],
   },
   {
-    group: "Sales",
+    group: "SALES",
     items: [
-      { label: "Orders", path: "/orders", permission: "orders.view", icon: FiShoppingCart },
-      { label: "Payments", path: "/payments", permission: "payments.view", icon: FiCreditCard },
-      { label: "Deliveries", path: "/deliveries", permission: "deliveries.view", icon: FiTruck },
+      {
+        label: "Sales",
+        path: "/orders",
+        icon: FiShoppingCart,
+        permission: "orders.view",
+        subItems: [
+          { label: "Sales Invoice", path: "/orders", permission: "orders.view" },
+          { label: "Quotation / Estimate", path: "/quotations", permission: "quotations.view" },
+          { label: "Payment In", path: "/payments", permission: "payments.view" },
+          { label: "Sales Return", path: "/sales-returns", permission: "orders.view" },
+          { label: "Credit Note", path: "/credit-notes", permission: "orders.view" },
+        ],
+      },
+      {
+        label: "Purchase",
+        path: "/purchases",
+        icon: FiShoppingBag,
+        permission: "orders.view",
+        subItems: [
+          { label: "Purchase Invoice", path: "/purchases", permission: "orders.view" },
+          { label: "Payment Out", path: "/payments-out", permission: "payments.view" },
+          { label: "Purchase Return", path: "/purchase-returns", permission: "orders.view" },
+          { label: "Debit Note", path: "/debit-notes", permission: "orders.view" },
+        ],
+      },
+      {
+        label: "POS Fast Billing",
+        path: "/orders/create",
+        icon: FiMonitor,
+        permission: "orders.create",
+      },
+      {
+        label: "Delivery Challan",
+        path: "/deliveries",
+        icon: FiTruck,
+        permission: "deliveries.view",
+      },
+    ],
+  },
+
+  {
+    group: "STOREFRONT",
+    items: [
+      {
+        label: "Home Banners",
+        path: "/banners",
+        icon: FiImage,
+        permission: "banners.view",
+      },
+      {
+        label: "Testimonials",
+        path: "/testimonials",
+        icon: FiMessageSquare,
+        permission: "testimonials.view",
+      },
+      {
+        label: "Coupons",
+        path: "/coupons",
+        icon: FiPercent,
+        permission: "coupons.view",
+      },
+      {
+        label: "About Page",
+        path: "/about-page",
+        icon: FiInfo,
+        permission: "about.view",
+      },
     ],
   },
   {
-    group: "Catalogue",
+    group: "REPORTS & TOOLS",
     items: [
-      { label: "Products", path: "/products", permission: "products.view", icon: FiBox },
-      { label: "Categories", path: "/categories", permission: "categories.view", icon: FiTag },
-      { label: "Brands", path: "/brands", permission: "brands.view", icon: FiBookmark },
-      { label: "Home Banners", path: "/banners", permission: "banners.view", icon: FiImage },
-      { label: "Testimonials", path: "/testimonials", permission: "testimonials.view", icon: FiMessageSquare },
+      {
+        label: "Reports",
+        path: "/reports",
+        icon: FiBarChart2,
+        permission: "reports.view",
+      },
+      {
+        label: "Notifications",
+        path: "/notifications",
+        icon: FiBell,
+        permission: "notifications.view",
+      },
     ],
   },
   {
-    group: "Inventory",
+    group: "ADMINISTRATION",
     items: [
-      { label: "Inventory", path: "/inventory", permission: "inventory.view", icon: FiLayers },
-      { label: "Warehouses", path: "/warehouses", permission: "showrooms.view", icon: FiDatabase },
-      { label: "Stock Transfer", path: "/transfers", permission: "inventory.transfer", icon: FiRepeat },
-    ],
-  },
-  {
-    group: "Showrooms",
-    items: [{ label: "Showrooms", path: "/showrooms", permission: "showrooms.view", icon: FiHome }],
-  },
-  {
-    group: "Reports",
-    items: [{ label: "Reports", path: "/reports", permission: "reports.view", icon: FiBarChart2 }],
-  },
-  {
-    group: "Notifications",
-    items: [
-      { label: "Notifications", path: "/notifications", permission: "notifications.view", icon: FiBell },
-    ],
-  },
-  {
-    group: "Administration",
-    items: [
-      { label: "Users", path: "/users", permission: "users.view", icon: FiUserCheck },
-      { label: "Roles & Permissions", path: "/roles", permission: "roles.view", icon: FiShield },
-      { label: "Audit Logs", path: "/audit-logs", permission: "audit-logs.view", icon: FiActivity },
+      {
+        label: "Users",
+        path: "/users",
+        icon: FiUserCheck,
+        permission: "users.view",
+      },
+      {
+        label: "Roles & Permissions",
+        path: "/roles",
+        icon: FiShield,
+        permission: "roles.view",
+      },
+      {
+        label: "Audit Logs",
+        path: "/audit-logs",
+        icon: FiActivity,
+        permission: "audit-logs.view",
+      },
+      {
+        label: "Business Settings",
+        path: "/settings",
+        icon: FiSettings,
+      },
     ],
   },
 ];
 
 export default navigation;
+

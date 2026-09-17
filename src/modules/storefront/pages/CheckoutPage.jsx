@@ -2,12 +2,14 @@
 // search + detect location), then pay (dummy gateway) which creates the order.
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiMapPin, FiShoppingBag, FiLock, FiCrosshair } from "react-icons/fi";
+import { FiMapPin, FiShoppingBag, FiLock, FiCrosshair, FiTag, FiCheck, FiX } from "react-icons/fi";
 import Lottie from "lottie-react";
 import { useStore } from "../store/StoreProvider";
 import { useCustomerAuth } from "../store/CustomerAuthProvider";
 import { useGooglePlaces } from "../hooks/useGooglePlaces";
+import { useShopCoupons } from "../hooks/useShop";
 import { imageUrl, formatINR } from "../utils";
+import { api } from "../../../services";
 import orderConfirmedAnim from "../../../assets/Order Confirmed.json";
 
 export function CheckoutPage() {
@@ -15,12 +17,23 @@ export function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useStore();
   const { isLoggedIn, customer, checkout } = useCustomerAuth();
   const { ready, hasKey, attachAutocomplete, detectLocation, renderMap } = useGooglePlaces();
+  const { data: availableCoupons = [] } = useShopCoupons();
 
-  const [mode, setMode] = useState("saved"); // "saved" | "other"
+  const [mode, setMode] = useState("saved");
   const [other, setOther] = useState({ address: "", city: "", state: "", pincode: "", lat: null, lng: null });
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
-  const [done, setDone] = useState(null); // { number, total }
+  const [done, setDone] = useState(null);
+
+  // Coupon state
+  const [couponCode, setCouponCode]         = useState("");
+  const [couponApplied, setCouponApplied]   = useState(null); // { code, discountAmount, description }
+  const [couponError, setCouponError]       = useState("");
+  const [couponLoading, setCouponLoading]   = useState(false);
+
+  const finalTotal = couponApplied && couponApplied.discountAmount > 0
+    ? Math.max(cartTotal - couponApplied.discountAmount, 0)
+    : cartTotal;
   const addressRef = useRef(null);
   const mapRef = useRef(null);       // map container div
   const mapCtrl = useRef(null);      // map controller from renderMap
@@ -69,6 +82,35 @@ export function CheckoutPage() {
     }
   }
 
+  async function applyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponError("");
+    setCouponLoading(true);
+    try {
+      const { data } = await api.post("/shop/coupons/validate", {
+        code: couponCode.trim().toUpperCase(),
+        cartTotal,
+        categoryIds: cart.map((i) => i.categoryId).filter(Boolean),
+      });
+      setCouponApplied({
+        code: data.code,
+        discountAmount: data.discountAmount,
+        description: data.description,
+      });
+      setCouponCode("");
+    } catch (err) {
+      setCouponError(err.response?.data?.message || "Invalid coupon code.");
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
+  function removeCoupon() {
+    setCouponApplied(null);
+    setCouponCode("");
+    setCouponError("");
+  }
+
   async function handlePay() {
     setError("");
     // Resolve the delivery address.
@@ -92,9 +134,10 @@ export function CheckoutPage() {
         items: cart.map((i) => ({ product: i.id, quantity: i.qty })),
         deliveryAddress,
         paymentMethod: "online",
+        couponCode: couponApplied?.code || undefined,
       });
       clearCart();
-      setDone({ number: res.number, total: res.total });
+      setDone({ number: res.number, total: res.total, couponDiscount: res.couponDiscount });
     } catch (err) {
       setError(err.response?.data?.message || "Checkout failed. Please try again.");
     } finally {
@@ -243,9 +286,87 @@ export function CheckoutPage() {
             <span>Delivery</span>
             <span className="sf-summary__free">FREE</span>
           </div>
+
+          {/* Available coupons — always visible so customer knows what's on offer */}
+          {!couponApplied && availableCoupons.length > 0 && (
+            <div style={{ marginBottom: 10 }}>
+              <p className="sf-coupon__list-label" style={{ marginBottom: 6 }}>
+                🏷️ Available Offers
+              </p>
+              {availableCoupons.map((c) => (
+                <div key={c._id || c.code} className="sf-coupon__chip">
+                  <div className="sf-coupon__chip-left">
+                    <span className="sf-coupon__chip-code">{c.code}</span>
+                    <span className="sf-coupon__chip-desc">
+                      {c.description ||
+                        (c.type === "flat" ? `₹${c.value} off` : `${c.value}% off`) +
+                        (c.minOrderAmount > 0
+                          ? ` on orders above ₹${Number(c.minOrderAmount).toLocaleString("en-IN")}`
+                          : "")}
+                    </span>
+                  </div>
+                  <button
+                    className="sf-coupon__chip-apply"
+                    onClick={() => {
+                      setCouponCode(c.code);
+                      setCouponError("");
+                    }}>
+                    Use
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Coupon input */}
+          <div className="sf-coupon">
+            <div className="sf-coupon__label">
+              <FiTag size={14} /> Have a coupon?
+            </div>
+            {couponApplied ? (
+              <div className="sf-coupon__applied">
+                <div className="sf-coupon__applied-left">
+                  <FiCheck size={14} color="#1a7f4e" />
+                  <span>
+                    <strong>{couponApplied.code}</strong>
+                    {couponApplied.description && ` — ${couponApplied.description}`}
+                  </span>
+                </div>
+                <button className="sf-coupon__remove" onClick={removeCoupon} title="Remove coupon">
+                  <FiX size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="sf-coupon__row">
+                <input
+                  className="sf-coupon__input"
+                  value={couponCode}
+                  onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponError(""); }}
+                  placeholder="Enter coupon code"
+                  onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
+                />
+                <button
+                  className="sf-coupon__btn"
+                  onClick={applyCoupon}
+                  disabled={couponLoading || !couponCode.trim()}>
+                  {couponLoading ? "..." : "Apply"}
+                </button>
+              </div>
+            )}
+            {couponError && <p className="sf-coupon__error">{couponError}</p>}
+          </div>
+
+          {/* Discount row — only when coupon applied */}
+          {couponApplied && (
+            <div className="sf-summary__row sf-summary__discount">
+              <span>Coupon discount ({couponApplied.code})</span>
+              <span>− {formatINR(couponApplied.discountAmount)}</span>
+            </div>
+          )}
+
           <div className="sf-summary__row sf-summary__total">
             <span>Total</span>
-            <span>{formatINR(cartTotal)}</span>
+            <span>{formatINR(finalTotal)}</span>
           </div>
 
           {error && <p className="sf-auth__error">{error}</p>}
@@ -255,7 +376,7 @@ export function CheckoutPage() {
             onClick={handlePay}
             disabled={placing}
           >
-            {placing ? "Placing order..." : `Pay ${formatINR(cartTotal)}`}
+            {placing ? "Placing order..." : `Pay ${formatINR(finalTotal)}`}
           </button>
 
           <div className="sf-checkout__secure">
